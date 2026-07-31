@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Annonce publiée</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      
+    }
+    
+
+    .card {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .card-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .button-row form {
+      margin: 0;
+    }
+
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .btn.danger {
+      background-color: #dc3545;
+    }
+
+    .btn.danger:hover {
+      background-color: #a71d2a;
+    }
+
+
+    .slider {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .slider img {
+      width: 100%;
+      display: none;
+    }
+
+    .slider img.active {
+      display: block;
+    }
+
+    .info {
+      margin-top: 20px;
+    }
+
+    .info h2 {
+      margin: 0;
+    }
+
+    .info p {
+      margin: 6px 0;
+    }
+
+    .nav-buttons {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .nav-buttons button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      margin: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .nav-buttons button:hover {
+      background: #0056b3;
+    }
+
+    
+
+  </style>
+</head>
+<body>
+
+  
+
+<div class="card">
+  <div class="slider" id="image-slider">
+    {% for image in annonce.images.all %}
+      <img src="{{ image.image.url }}" class="{% if forloop.first %}active{% endif %}" alt="Image {{ forloop.counter }}">
+    {% endfor %}
+  </div>
+
+  <div class="nav-buttons">
+    <button onclick="prevImage()">◀</button>
+    <button onclick="nextImage()">▶</button>
+  </div>
+
+  <div class="info">
+    <h2>{{ annonce.get_type_annonce_display }} - {{ annonce.standing }}</h2>
+    <p><strong>Prix :</strong> {{ annonce.prix }} FCFA</p>
+    <p><strong>Description :</strong> {{ annonce.description|default:'(Aucune description)' }}</p>
+    <p><strong>Quartier :</strong> {{ annonce.quartier }}</p>
+    <p><strong>Téléphone :</strong> {{ annonce.numero_telephone }}</p>
+
+    {% if annonce.coordonnes_google_maps %}
+      <p><a href="{{ annonce.coordonnes_google_maps }}" target="_blank">Voir sur Google Maps</a></p>
+    {% endif %}
+
+    <div class="button-row">
+      <form method="GET" action="{% url 'annonce' %}">
+        <button type="submit" class="btn restart">Recommencer</button>
+      </form>
+    
+      <form method="POST" action="{% url 'publier_confirme' annonce.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn publish">Publier</button>
+      </form>
+    </div>
+
+  </div>
+</div>  
+
+
+<script>
+  const images = document.querySelectorAll('#image-slider img');
+  let current = 0;
+
+  function showImage(index) {
+    images.forEach((img, i) => {
+      img.classList.toggle('active', i === index);
+    });
+  }
+
+  function nextImage() {
+    current = (current + 1) % images.length;
+    showImage(current);
+  }
+
+  function prevImage() {
+    current = (current - 1 + images.length) % images.length;
+    showImage(current);
+  }
+</script>
+
+</body>
+</html>

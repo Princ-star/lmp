@@ -1,0 +1,19 @@
+# Virtual environment
+myenv/
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Media files
+media/
+
+# IDE / Editor
+.vscode/
+.idea/

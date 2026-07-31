@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin_page</title>
+</head>
+<body>
+    <h2>Publications de {{ utilisateur.prenom }} {{ utilisateur.nom }}</h2>
+    <p>Email : {{ utilisateur.email }}</p>
+    <p>Date de naissance : {{ utilisateur.date_de_naissance }}</p>
+
+    <h3>Liste des Annonces (Publications)</h3>
+
+    {% if annonces %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Quartier</th>
+                    <th>Prix</th>
+                    <th>Publiée ?</th>
+                    <th>Disponible ?</th>
+                    <th>Nombre de Vues 👁️</th>
+                    <th>Nombre de Clics 🖱️</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for annonce in annonces %}
+                    <tr>
+                        <td>{{ annonce.get_type_annonce_display }}</td>
+                        <td>{{ annonce.quartier }}</td>
+                        <td>{{ annonce.prix }}</td>
+                        <td>{% if annonce.est_publiee %}Oui{% else %}Non{% endif %}</td>
+                        <td>{% if annonce.est_disponible %}Oui{% else %}Non{% endif %}</td>
+                        <td><strong>{{ annonce.nbr_vues }}</strong></td>
+                        <td><strong>{{ annonce.nbr_clics }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ utilisateur.prenom }} n'a pas encore publié d'annonces.</p>
+    {% endif %}
+
+    <p><a href="{% url 'admin_users_list' %}">Retour à la liste des utilisateurs</a></p>
+</body>
+</html>

@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            height: 100vh;
+            background-image: url('{% static "annonces/images/b.jpg" %}') ;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .image-container {
+            width: 50%;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+        }
+        .text {
+            margin: 20px 0;
+            font-size: 18px;
+            line-height:1.8 ;
+            position: absolute;
+            bottom: 110px;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background :rgba(81, 85, 85, 0.731) ;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            position: absolute;
+            left: 200px;
+            bottom: 40px;
+        }
+
+        .infos{
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, .2);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 10px  rgba(0, 0, 0, .2);
+            color: black;
+            border-radius: 10px;
+            padding: 30px 40px;
+            width: 500px;
+            margin: O auto;
+            position: absolute;
+            left: 40px;
+            top: 90px;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+             from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+
+    .infos .colonne{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .infos .colonne div {
+        width: 45%;
+    }
+
+
+
+    
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <box-icon name='user' type='solid'></box-icon>
+            <span>PROFIL</span>
+        </div>
+        <p class="text">Felicitation pour la création de votre compte. LMP vous permet de mettre en location ou de vendre Maison , Villa , Appartement et meme parcelle. Pour faire une annonce, appuyez sur le bouton "Faire une Annonce" et suivez les instrucstions. Lorsque de potentiels clients seront interressés par vos articles, vous en serez informé.
+        </p>
+        <a href="{% url 'annonce' %}" class="btn">Faire une Annonce</a>
+    </div>
+    <div class="image-container">
+        <img src="{% static 'annonces/images/bv.jpg' %}" alt="Image ">
+    </div>
+    <div  class ="infos" >
+        <div class="colonne"> 
+            <div> <strong> Nom : </strong> {{user.nom}} </div>
+            <div> <strong> Date de naissance : </strong> {{user.date_de_naissance}} </div>
+        </div>
+        <div class="colonne">
+            <div> <strong> Email : </strong>  {{user.email}} </div>
+            <div> <strong> Prenom : </strong> {{user.prenom}} </div>
+        </div>
+
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'admin_users_list' %}" style="color: red; font-weight: bold;">
+                🚀 Accès Administration Utilisateurs
+            </a>
+        {% endif %}
+
+
+    </div>
+</body>
+</html>

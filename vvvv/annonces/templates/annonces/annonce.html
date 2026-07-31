@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Créer une annonce</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      
+      font-family: Arial, sans-serif;
+      background-image: url('{% static "annonces/images/b.jpg" %}') ;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    input[type="file"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Créer une annonce</h2>
+  {% if form.errors %}
+    <div class="alert alert-danger">{{ form.errors }}</div>
+  {% endif %}
+  {% if formset.non_form_errors %}
+    <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+  {% endif %}
+
+
+  <form method="POST" enctype="multipart/form-data" id="annonce-form">
+    {% csrf_token %}
+
+    <label for="id_type_annonce">Type d'annonce :</label>
+    {{ form.type_annonce }}
+
+    <label for="id_standing">Standing :</label>
+    <select name="standing" id="id_standing" required>
+      <option value="">Sélectionnez un type d'annonce d'abord</option>
+    </select>
+
+    <label for="id_prix">Prix :</label>
+    {{ form.prix }}
+
+    <label for="id_quartier">Quartier :</label>
+    {{ form.quartier }}
+
+    <label for="id_description">Description (facultatif) :</label>
+    {{ form.description }}
+
+    <label for="id_coordonnes_google_maps">Lien Google Maps (facultatif) :</label>
+    {{ form.coordonnes_google_maps }}
+
+    <label for="id_numero_telephone">Numéro de téléphone :</label>
+    {{ form.numero_telephone }}
+
+
+    <div id="image-container">
+      {{ formset.management_form }}    <!-- ← Obligatoire ! -->
+
+      {% for img_form in formset %}
+        <div class="image-form">
+          {{ img_form.image }}
+        </div>
+      {% endfor %}
+    </div>
+            
+    <button type="submit">Publier l’annonce</button>
+  </form>
+
+  <script>
+    const typeAnnonceField = document.getElementById('id_type_annonce');
+    const standingField = document.getElementById('id_standing');
+
+    const optionsLocation = {
+      "entree_couchee": "Entrée couchée",
+      "1ch_salon": "1 chambre un salon",
+      "1ch_salon_douche": "1 chambre un salon couloir douche",
+      "2ch_salon": "2 chambres salon",
+      "3ch_salon": "3 chambres salon",
+      "villa_meuble": "Villa meublée",
+      "villa_non_meuble": "Villa non meublée",
+      "appart_meuble": "Appartement meublé",
+      "appart_non_meuble": "Appartement non meublé",
+      "quest_house": "Quest house",
+      "parcelle": "Parcelle"
+    };
+
+    const optionsVente = {
+      "villa": "Villa",
+      "maison": "Maison",
+      "parcelle": "Parcelle"
+    };
+
+    function updateStandingOptions(type) {
+      standingField.innerHTML = '<option value="">Sélectionnez</option>';
+      const options = type === 'location' ? optionsLocation : optionsVente;
+      for (const [val, label] of Object.entries(options)) {
+        const option = document.createElement('option');
+        option.value = val;
+        option.textContent = label;
+        standingField.appendChild(option);
+      }
+    }
+
+    typeAnnonceField.addEventListener('change', function () {
+      updateStandingOptions(this.value);
+    });
+
+    // Gère le cas du retour formulaire rempli
+    window.addEventListener('load', () => {
+      const currentType = typeAnnonceField.value;
+      if (currentType) {
+        updateStandingOptions(currentType);
+      }
+    });
+  </script>
+  
+  
+</body>
+</html>

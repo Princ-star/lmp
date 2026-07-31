@@ -1,0 +1,728 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Plateforme LMP — Annonces</title>
+
+  <style>
+    :root{
+      --accent: rgb(196, 149, 224);
+      --accent-dark:  rgba(81, 85, 85, 0.731);
+      --bg: #f9f9f9;
+      --card: #ffffff;
+      --muted: #6b6b6b;
+    }
+
+    /* Global */
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0 20px;
+      color: #222;
+      -webkit-font-smoothing:antialiased;
+    }
+
+      
+    footer.site-footer{
+      margin-top: 48px;
+      background: linear-gradient(180deg, var(--accent-dark), var(--accent));
+      color: #fff;
+      padding: 40px 20px;
+      border-radius: 12px;
+    }
+  .footer-grid{
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: 18px;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .footer h4{
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #fff;
+  }
+  .footer a{
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    display: block;
+    margin: 6px 0;
+    font-size: 14px;
+  }
+  .socials a{
+    margin-right: 8px;
+    font-size: 18px;
+    color: #050505;
+    background: rgba(255,255,255,0.12);
+    padding: 8px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer .small{
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    margin-top: 18px;
+  }
+  .newsletter input[type="email"]{
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .newsletter button{
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #000;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  @media (max-width:900px){
+    .footer-grid{ grid-template-columns: 1fr; }
+    .socials a{ margin-bottom:8px; }
+  }
+
+
+
+    .logo img {
+      width: auto;
+      height: 90px;
+    }
+    .container{
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 30px 0 80px;
+    }
+
+    /* Navbar */
+    .navbar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 30px;
+        background: white;
+        border-bottom: 1px solid #ddd;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .navbar-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .navbar-left img {
+        height: 45px; 
+        width: auto;
+    }
+
+    .menu {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        list-style: none;
+    }
+
+    .menu li a {
+        font-size: 15px;      /* Réduction de la taille */
+        font-weight: 500;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .menu li a:hover {
+        color: #0a73b7;
+    }
+
+    /* Icône déconnexion */
+    .logout-btn {
+        font-size: 22px;
+        color: #c82333;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .logout-btn:hover {
+        color: #a81025;
+    }
+    /* Hero / speech */
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.85), rgba(255,255,255,0.6));
+      padding: 24px;
+      border-radius: 12px;
+      margin: 24px 0;
+      box-shadow: 0 6px 18px rgba(10,10,10,0.05);
+    }
+    .hero-text h1{ margin:0 0 8px; font-size:28px; color:#0b3a23; }
+    .hero-text p{ margin:0; color:var(--muted); line-height:1.5; max-width:760px; }
+    .hero-cta{ display:flex; gap:12px; align-items:center; }
+    .btn-primary{
+      background: var(--accent);
+      border: none;
+      padding: 10px 16px;
+      border-radius:10px;
+      color: #000;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:none;
+      box-shadow: 0 6px 12px rgba(30,189,90,0.12);
+    }
+
+    /* Grid of cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      margin-top: 20px;
+    }
+    @media (max-width: 992px) { .grid{ grid-template-columns: repeat(2,1fr);} .hero{flex-direction:column; align-items: flex-start;} }
+    @media (max-width: 600px) { .grid{ grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: 0 4px 16px rgba(15,15,15,0.04);
+      display: flex;
+      flex-direction: column;
+      gap:0;
+      min-height: 320px;
+      overflow: visible;
+      position: relative;
+    }
+
+    /* Carousel per card */
+    .carousel {
+      position: relative;
+      height: 210px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      overflow: hidden;
+      background: #eee;
+    }
+    .carousel-inner { position: relative; width:100%; height:100%; }
+    .carousel .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+    .carousel .slide.active { opacity: 1; z-index: 2; }
+    .carousel img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .carousel-controls{
+      position:absolute;
+      top: 50%;
+      left:0; right:0;
+      transform: translateY(-50%);
+      display:flex;
+      justify-content:space-between;
+      padding: 0 8px;
+      pointer-events: none;
+    }
+    .carousel-controls button{
+      pointer-events: auto;
+      background: rgba(0,0,0,0.35);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      width:36px; height:36px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+    }
+    .carousel-indicators{
+      position:absolute;
+      bottom: 8px;
+      left: 8px;
+      display:flex;
+      gap:6px;
+    }
+    .carousel-indicators button{
+      width:9px; height:9px; border-radius:50%;
+      border:none; background: rgba(255,255,255,0.6); cursor:pointer;
+    }
+    .carousel-indicators button.active{ background: rgba(0,0,0,0.7); }
+
+    /* compact header row on card (keeps badge + CTA visible) */
+    .card-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      gap:12px;
+    }
+    .title-block { display:flex; flex-direction:column; gap:6px; }
+    .card-title { font-weight:700; color:#0b3a23; font-size:16px; }
+    .card-sub { color:var(--muted); font-size:13px; }
+
+    .right-actions { display:flex; gap:10px; align-items:center; }
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
+    }
+    .badge.available{ background: #e9fbe9; color: #0f6d34; border: 1px solid rgba(15,109,52,0.08); }
+    .badge.unavailable{ background: #ffecec; color: #8b1d1d; border: 1px solid rgba(139,29,29,0.06); }
+
+    .btn-whatsapp{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:8px;
+      background:  rgba(81, 85, 85, 0.731);
+      font-weight:700;
+      text-decoration:none;
+      color:#000;
+      white-space:nowrap;
+    }
+
+    .btn-toggle-details{
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      padding:6px;
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    /* info band (sliding panel) */
+    .info-band {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      transform: translateY(115%); /* hidden below card */
+      transition: transform .36s cubic-bezier(.2,.9,.3,1), opacity .25s;
+      border-radius:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,248,248,0.98));
+      box-shadow: 0 10px 26px rgba(10,10,10,0.12);
+      padding:14px;
+      z-index: 40;
+      opacity: 0;
+      will-change: transform;
+      backdrop-filter: blur(4px);
+    }
+    .info-band.open { transform: translateY(0%); opacity: 1; }
+
+    .info-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:start; }
+    @media (max-width:640px){ .info-grid{ grid-template-columns:1fr; } }
+
+    .info-item { background:#fff; border-radius:8px; padding:10px; box-shadow:0 6px 18px rgba(8,8,8,0.04); }
+    .info-item h5 { margin:0 0 6px; font-size:13px; color:#0b3a23; }
+    .info-item p { margin:0; color:var(--muted); font-size:13px; line-height:1.35; }
+
+    .full-desc { grid-column:1/-1; padding:12px; background: linear-gradient(90deg,#fff,#fbfbfb); border-radius:8px; box-shadow: 0 6px 18px rgba(8,8,8,0.04); }
+
+    .card-footer {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      gap:12px;
+      margin-top:auto;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* chevron rotate */
+    .chev { transition: transform .28s ease; }
+    .card.open .chev { transform: rotate(180deg); }
+
+    
+
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <img src="{% static 'annonces/images/uu.png' %}" alt="Logo LMP">
+    </div>  
+      <ul class="menu">
+        <li><a href="{% url 'vente' %}">Vente</a></li>
+        <li><a href="{% url 'location' %}">Location</a></li>
+        <li><a href="{% url 'profil' %}">Faire une annonce</a></li>
+        <li><a href="{% url 'publications' %}">Mes publications</a></li>
+
+        <!-- Icône Logout -->
+        <li>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </li>
+    </ul>
+  </nav>
+  
+  <div class="container">
+    <!-- HERO / SPEECH -->
+    <section class="hero" role="region" aria-label="Introduction">
+      <div class="hero-text">
+        <h1>Trouvez le logement ou la parcelle idéale, simplement.</h1>
+        <p>
+          LMP regroupe des annonces fiables et vérifiées pour la vente et la location — appartements,
+          maisons et terrains. Naviguez par quartier, standing ou prix, et contactez directement le propriétaire via WhatsApp.
+          Conçu pour être rapide, transparent et sécurisé.
+        </p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn-primary" href="{% url 'profil' %}">Publier une annonce</a>
+        <a class="btn-primary" href="{% url 'vente' %}">Voir les mises en vente</a>
+      </div>
+    </section>
+
+    <!-- LISTE D'ANNONCES -->
+    <div class="grid" aria-live="polite">
+      {% for annonce in annonces %}
+        <div class="card" aria-label="Annonce {{ forloop.counter }}" id="card-{{ forloop.counter }}">
+          <!-- Carousel -->
+          <div class="carousel" id="carousel-{{ forloop.counter }}">
+            <div class="carousel-inner">
+              {% for img in annonce.images.all %}
+                <div class="slide{% if forloop.first %} active{% endif %}">
+                  <img src="{{ img.image.url }}" alt="Photo de {{ annonce.titre|default:'logement' }}" loading="lazy">
+                </div>
+              {% empty %}
+                <div class="slide active">
+                  <img src="{% static 'images/placeholder.jpg' %}" alt="Image par défaut" loading="lazy">
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if annonce.images.all|length > 1 %}
+              <div class="carousel-controls">
+                <button class="prev" aria-label="Précédent"></button>
+                <button class="next" aria-label="Suivant"></button>
+              </div>
+
+              <div class="carousel-indicators" role="tablist">
+                {% for img in annonce.images.all %}
+                  <button class="indicator{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Image {{ forloop.counter }}"></button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Compact header row: title + badge + actions -->
+          <div class="card-header">
+            <div class="title-block">
+              <div class="card-title">{{ annonce.titre|default:"Annonce" }}</div>
+              <div class="card-sub">{{ annonce.quartier|default:"-" }}</div>
+            </div>
+ 
+            <div class="right-actions">
+              {% if annonce.est_disponible %}
+                <span class="badge available" id="badge-{{ annonce.id }}">DISPONIBLE</span>
+              {% else %}
+                <span class="badge unavailable" id="badge-{{ annonce.id }}">NON DISPONIBLE</span>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <a class="btn-whatsapp" href="https://wa.me/{{ annonce.numero_telephone|cut:'+' }}" target="_blank" rel="noopener" data-annonce-id = "{{ annonce.id }}" data-compteur-type ="clics">
+                  <i class="bx bxl-whatsapp"></i> Intéressé
+                </a>
+              {% else %}
+                <a class="btn-whatsapp"
+                  href="{% url 'login' %}?next={{ request.path }}">
+                  <i class="bx bxl-whatsapp"></i> Intéressé
+                </a>
+              {% endif %}  
+              <!-- details toggle -->
+              <button class="btn-toggle-details" aria-expanded="false" aria-controls="band-{{ forloop.counter }}" data-target="{{ forloop.counter }}" data-annonce-id="{{ annonce.id }}" data-compteur-type="vues" >
+                <i class="bx bx-chevron-up chev"></i>
+              </button>
+            </div>
+          </div>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              // Fonction pour récupérer le CSRF Token de Django
+              function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                  const cookies = document.cookie.split(';');
+                  for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Est-ce que le nom du cookie commence par ce que nous cherchons ?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                    }
+                  }
+                }
+                return cookieValue;
+              }
+              const csrftoken = getCookie('csrftoken');
+
+              // Fonction pour envoyer la requête au serveur
+              function sendIncrementRequest(annonceId, compteurType) {
+                const url = `/annonce/${annonceId}/incrementer/`; // Assurez-vous que l'URL correspond à votre configuration
+        
+                const formData = new FormData();
+                formData.append('compteur_type', compteurType);
+        
+                fetch(url, {
+                  method: 'POST',
+                  body: formData,
+                  headers: {
+                      'X-CSRFToken': csrftoken, // Très important pour la sécurité Django
+                      // Ne mettez pas 'Content-Type': 'application/json' si vous utilisez FormData
+                  }
+                })
+                .then(response => {
+                  if (!response.ok) {
+                    // Gérer les réponses non réussies
+                    console.error(`Erreur d'incrémentation pour ${compteurType}: ${response.statusText}`);
+                  }
+                  // Ici, vous pouvez traiter la réponse JSON si nécessaire
+                  return response.json();
+                })
+                .catch(error => {
+                  console.error('Erreur réseau lors de l\'incrémentation:', error);
+                });
+              }
+
+              // Gestionnaire de clics pour le bouton "Intéressé" (Clics)
+              document.querySelectorAll('.btn-whatsapp').forEach(button => {
+                button.addEventListener('click', function() {
+                  const id = this.dataset.annonceId;
+                  const type = this.dataset.compteurType;
+                  if (id && type) {
+                    sendIncrementRequest(id, type);
+                  }
+                });
+              });
+
+              // Gestionnaire de clics pour le bouton "Détails" (Vues)
+              document.querySelectorAll('.btn-toggle-details').forEach(button => {
+                button.addEventListener('click', function() {
+                  const id = this.dataset.annonceId;
+                  const type = this.dataset.compteurType;
+                  if (id && type) {
+                    sendIncrementRequest(id, type);
+                  }
+                });
+              });
+            });
+
+
+
+
+          </script>
+
+
+          <!-- Info band (sliding panel) -->
+          <div class="info-band" id="band-{{ forloop.counter }}" role="region" aria-hidden="true">
+            <div class="info-grid">
+              <div class="info-item">
+                <h5><i class="bx bx-category"></i> Type</h5>
+                <p>{{ annonce.type_annonce|capfirst }}</p>
+              </div>
+
+              <div class="info-item">
+                <h5><i class="bx bx-buildings"></i> Standing</h5>
+                <p>{{ annonce.standing|default:"Non précisé" }}</p>
+              </div>
+
+              <div class="info-item">
+                <h5><i class="bx bx-money"></i> Prix</h5>
+                <p>{{ annonce.prix|default:"--" }} FCFA</p>
+              </div>
+
+              <div class="info-item">
+                <h5><i class="bx bx-phone"></i> Contact</h5>
+                <p>{{ annonce.numero_telephone|default:"-" }}</p>
+              </div>
+
+              <div class="full-desc">
+                <h5><i class="bx bx-detail"></i> Description</h5>
+                <p style="color:var(--muted); margin-top:6px;">{{ annonce.description|default:"(Aucune description fournie)" }}</p>
+              </div>
+
+              {% if annonce.coordonnes_google_maps %}
+                <div style="grid-column:1/-1; display:flex; justify-content:flex-end; margin-top:6px;">
+                  <a class="maps-link" href="{{ annonce.coordonnes_google_maps }}" target="_blank" rel="noopener" style="text-decoration:none; color:var(--accent-dark); font-weight:700; display:inline-flex; gap:8px; align-items:center;">
+                    <i class="bx bx-map"></i> Voir sur Google Maps
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- footer small row -->
+          <div class="card-footer">
+            <div>Plus de détails disponibles</div>
+            <div style="text-transform:capitalize;">Publié: {% with owners=annonce.utilisateurs.all %}{% if owners %}{% for u in owners %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Propriétaire{% endif %}{% endwith %}</div>
+          </div>
+
+        </div>
+      {% empty %}
+        <p>Aucune annonce publiée pour le moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  
+
+  <footer class="site-footer">
+    <div class="footer-grid footer" role="contentinfo">
+      <div>
+        <h4>LMP</h4>
+        <p class="small">LMP facilite la mise en relation entre propriétaires et acheteurs/locataires. Transparence, simplicité et rapidité.</p>
+        <div class="small">© {{ now.year }} LMP. Tous droits réservés.</div>
+      </div>
+
+      <div>
+        <h4>Liens rapides</h4>
+        <a href="{% url 'vente' %}">Mise en vente</a>
+        <a href="{% url 'location' %}">Mise en location</a>
+        <a href="{% url 'profil' %}">Publier une annonce</a>
+        <a href="{% url 'publications' %}">Mes publications</a>
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Se déconnecter</button>
+          </form>
+        {% endif %}
+      </div>
+
+      <div>
+        <h4>Contacts</h4>
+        <a href="tel:+22961570611">(+229) 61 57 06 11 ou le 91 36 18 41</a>
+        <a href="lmpbenin653@gmail.com">lmpbenin653@gmail.com</a>
+        <div style="margin-top:3px;">Adresse: Cotonou, Bénin</div>
+      </div>
+
+      <div>
+        <h4>Newsletter</h4>
+        <p class="small">Recevez nos meilleures annonces chaque semaine.</p>
+
+        <div style="margin-top:12px;">
+          <a href="#" aria-label="Facebook" class="socials"><i class="bx bxl-facebook">Lmp Benin</i></a>
+          <a href="#" aria-label="Instagram" class="socials"><i class="bx bxl-instagram">lmpbenin</i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- JS: Carousel automatique + controls + info-band toggle -->
+  <script>
+    (function(){
+      const CAROUSEL_INTERVAL = 4000; // ms
+
+      // Carousel behavior (unchanged)
+      document.querySelectorAll('.carousel').forEach(carousel => {
+        const inner = carousel.querySelectorAll('.slide');
+        if(!inner.length) return;
+
+        let index = 0;
+        const indicators = carousel.querySelectorAll('.indicator');
+        const prevBtn = carousel.querySelector('.prev');
+        const nextBtn = carousel.querySelector('.next');
+        let timer = null;
+
+        function goTo(i){
+          if(inner.length <= 1) return;
+          inner[index].classList.remove('active');
+          if(indicators[index]) indicators[index].classList.remove('active');
+          index = (i + inner.length) % inner.length;
+          inner[index].classList.add('active');
+          if(indicators[index]) indicators[index].classList.add('active');
+        }
+
+        function next(){ goTo(index + 1); }
+        function prev(){ goTo(index - 1); }
+
+        if(inner.length > 1){
+          timer = setInterval(next, CAROUSEL_INTERVAL);
+
+          carousel.addEventListener('mouseenter', ()=> { clearInterval(timer); timer = null; });
+          carousel.addEventListener('mouseleave', ()=> { if(!timer) timer = setInterval(next, CAROUSEL_INTERVAL); });
+
+          if(nextBtn) nextBtn.addEventListener('click', ()=> { next(); if(timer){ clearInterval(timer); timer = setInterval(next, CAROUSEL_INTERVAL);} });
+          if(prevBtn) prevBtn.addEventListener('click', ()=> { prev(); if(timer){ clearInterval(timer); timer = setInterval(next, CAROUSEL_INTERVAL);} });
+
+          indicators.forEach((btn, i) => {
+            btn.addEventListener('click', ()=> { goTo(i); if(timer){ clearInterval(timer); timer = setInterval(next, CAROUSEL_INTERVAL);} });
+          });
+        }
+      });
+
+      // Info-band toggle
+      const cards = document.querySelectorAll('.card');
+      let openCard = null;
+
+      cards.forEach(card => {
+        const btn = card.querySelector('.btn-toggle-details');
+        if(!btn) return;
+        const bandId = btn.getAttribute('data-target');
+        const band = document.getElementById('band-' + bandId);
+
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          const isOpen = card.classList.contains('open');
+
+          // Close other open card
+          if (openCard && openCard !== card) {
+            openCard.classList.remove('open');
+            const oband = openCard.querySelector('.info-band');
+            if (oband) { oband.classList.remove('open'); oband.setAttribute('aria-hidden','true'); }
+            const obtn = openCard.querySelector('.btn-toggle-details');
+            if (obtn) obtn.setAttribute('aria-expanded','false');
+          }
+
+          if (!isOpen) {
+            card.classList.add('open');
+            if (band) { band.classList.add('open'); band.setAttribute('aria-hidden','false'); }
+            btn.setAttribute('aria-expanded','true');
+            openCard = card;
+            // scroll into view for small screens
+            setTimeout(()=> { card.scrollIntoView({behavior:'smooth', block:'center'}); }, 220);
+          } else {
+            card.classList.remove('open');
+            if (band) { band.classList.remove('open'); band.setAttribute('aria-hidden','true'); }
+            btn.setAttribute('aria-expanded','false');
+            openCard = null;
+          }
+        });
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', function(e){
+        if (!openCard) return;
+        if (openCard.contains(e.target)) return;
+        const band = openCard.querySelector('.info-band');
+        const btn = openCard.querySelector('.btn-toggle-details');
+        openCard.classList.remove('open');
+        if (band) { band.classList.remove('open'); band.setAttribute('aria-hidden','true'); }
+        if (btn) btn.setAttribute('aria-expanded','false');
+        openCard = null;
+      });
+
+    })();
+  </script>
+
+</body>
+</html>

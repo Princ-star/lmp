@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur LMP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            background-color: #f9f9f9;
+            padding: 0 20px;
+            background-image: url('{% static "annonces/images/b.jpg" %}') ;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        /* Animation du titre */
+        @keyframes fadeInBounce {
+            0% { opacity: 0; transform: translateY(-50px); }
+            50% { opacity: 0.5; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: Bahnschrift Light SemiCondensed;
+            font-size: 50px;
+            font-weight: bold;
+            color:rgba(81, 85, 85, 0.731) ;
+            text-align: center;
+            animation: fadeInBounce 1.5s ease-out;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            text-align: center;
+            color: rgba(81, 85, 85, 0.731);
+            margin-bottom: 30px;
+            width: 80%;
+        }
+
+        /* Mise en page des images côte à côte */
+        .image-container {
+            display: flex;
+            gap: 60px; /* Espace entre les images */
+            justify-content: center;
+            width: 100%;
+        }
+
+        .image-container img {
+            width: 45%; /* Chaque image prendra 45% de la largeur */
+            height: auto;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Bouton Inscrivez-vous */
+        .signup-button {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #fff;
+            background-color: rgba(81, 85, 85, 0.731) ;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .signup-button:hover {
+            background-color:rgba(81, 85, 85, 0.731);
+        }
+
+        /* Section Contactez-nous */
+        .contact-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 50px;
+            padding: 20px;
+            width: 100%;
+            background-color : rgba(81, 85, 85, 0.731);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .contact-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .contact-section a {
+            font-size: 18px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .contact-section a:hover {
+            color: #f0f0f0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Titre principal -->
+    <h1>WELCOME TO LMP</h1>
+
+    <!-- Texte introductif -->
+    <p>fsqbufsihqussmhfiughufdsghufghsduigdhfihudshgmifdhgidshgsfiùghifdsgfdgufdsihgfidshgifdsmgufdgdufghdsifgfdh
+        fgflugmhdfshgifgjdihhoigifsdùiigfhfdgoùjofdsgfdspigfdùpogfùsdjgsùdfogsfdjofdpfhohjdo^jssuodsfsssdjdjddhdjjyj
+    dkddddjjjdjdjddkd,d,dddddkdjd</p>
+
+    <!-- Deux images côte à côte -->
+    <div class="image-container">
+        <img src="{% static 'annonces/images/v.jpg' %}" alt="Image 1">
+        <img src="{% static 'annonces/images/i.jpg' %}" alt="Image 2">
+    </div>
+
+    <!-- Bouton "Inscrivez-vous" -->
+    <a href="{% url 'register' %}">
+        <button class="signup-button">Inscrivez-vous</button>
+    </a>
+    
+
+    <!-- Section Contactez-nous -->
+    <div class="contact-section">
+        <h2>Contactez-nous</h2>
+        <a href="https://wa.me/123456789" target="_blank">WhatsApp</a>
+        <a href="https://instagram.com" target="_blank">Instagram</a>
+        <a href="tel:+123456789">Numéro: +123456789</a>
+        <a href="https://facebook.com" target="_blank">Facebook</a>
+    </div>
+
+</body>
+</html>

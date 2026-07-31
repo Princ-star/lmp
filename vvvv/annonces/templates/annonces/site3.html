@@ -1,0 +1,401 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Plateforme LMP — Annonces</title>
+
+  <style>
+    :root{
+      --accent: #1ebd5a;
+      --accent-dark: #179c44;
+      --bg: #f9f9f9;
+      --card: #ffffff;
+      --muted: #6b6b6b;
+    }
+
+    /* Global */
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0 20px;
+      color: #222;
+      -webkit-font-smoothing:antialiased;
+    }
+    .container{
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 30px 0 80px;
+    }
+
+    /* Navbar */
+    .navbar{
+      background: var(--accent);
+      padding: 12px 20px;
+      color: black;
+    }
+    .navdiv{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .logo a{ font-size: 24px; font-weight: 700; color: #050505; text-decoration:none; }
+    .navlinks ul{ margin:0; padding:0; display:flex; gap:18px; align-items:center;}
+    .navlinks a{ color:#050505; font-weight:600; text-decoration:none; font-size:15px;}
+    .nav-icon{ font-size: 28px; color:#050505; margin-left:10px; }
+
+    /* Hero / speech */
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.85), rgba(255,255,255,0.6));
+      padding: 24px;
+      border-radius: 12px;
+      margin: 24px 0;
+      box-shadow: 0 6px 18px rgba(10,10,10,0.05);
+    }
+    .hero-text h1{ margin:0 0 8px; font-size:28px; color:#0b3a23; }
+    .hero-text p{ margin:0; color:var(--muted); line-height:1.5; max-width:760px; }
+    .hero-cta{ display:flex; gap:12px; align-items:center; }
+    .btn-primary{
+      background: var(--accent);
+      border: none;
+      padding: 10px 16px;
+      border-radius:10px;
+      color: #000;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:none;
+      box-shadow: 0 6px 12px rgba(30,189,90,0.12);
+    }
+
+    /* Grid of cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      margin-top: 20px;
+    }
+    @media (max-width: 992px) { .grid{ grid-template-columns: repeat(2,1fr);} .hero{flex-direction:column; align-items: flex-start;} }
+    @media (max-width: 600px) { .grid{ grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 16px rgba(15,15,15,0.04);
+      display: flex;
+      flex-direction: column;
+      gap:10px;
+      min-height: 380px;
+      overflow: hidden;
+    }
+
+    /* Carousel per card */
+    .carousel {
+      position: relative;
+      height: 210px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #eee;
+    }
+    .carousel-inner { position: relative; width:100%; height:100%; }
+    .carousel .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+    .carousel .slide.active { opacity: 1; z-index: 2; }
+    .carousel img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .carousel-controls{
+      position:absolute;
+      top: 50%;
+      left:0; right:0;
+      transform: translateY(-50%);
+      display:flex;
+      justify-content:space-between;
+      padding: 0 8px;
+      pointer-events: none;
+    }
+    .carousel-controls button{
+      pointer-events: auto;
+      background: rgba(0,0,0,0.35);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      width:36px; height:36px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+    }
+    .carousel-indicators{
+      position:absolute;
+      bottom: 8px;
+      left: 8px;
+      display:flex;
+      gap:6px;
+    }
+    .carousel-indicators button{
+      width:9px; height:9px; border-radius:50%;
+      border:none; background: rgba(255,255,255,0.6); cursor:pointer;
+    }
+    .carousel-indicators button.active{ background: rgba(0,0,0,0.7); }
+
+    /* Card content */
+    .meta{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .meta p{ margin:0; color:var(--muted); font-size:14px; }
+    .title{ font-weight:700; color:#0b3a23; margin:6px 0 4px; }
+    .description{ color:var(--muted); font-size:14px; min-height:48px; overflow:hidden; }
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
+    }
+    .badge.available{ background: #e9fbe9; color: #0f6d34; border: 1px solid rgba(15,109,52,0.08); }
+    .badge.unavailable{ background: #ffecec; color: #8b1d1d; border: 1px solid rgba(139,29,29,0.06); }
+
+    .card-footer{
+      margin-top:auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .price{ font-weight:800; color:#0b3a23; }
+    .btn-whatsapp{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:8px;
+      background: #25d366;
+      font-weight:700;
+      text-decoration:none;
+      color:#000;
+    }
+
+    /* Footer */
+    footer.site-footer{
+      margin-top: 48px;
+      background: linear-gradient(180deg,var(--accent-dark), var(--accent));
+      color: #fff;
+      padding: 40px 20px;
+      border-radius: 12px;
+    }
+    .footer-grid{ display:grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap:18px; max-width: 1300px; margin: 0 auto; align-items:start;}
+    @media (max-width:900px){ .footer-grid{ grid-template-columns: 1fr; } }
+
+    .footer h4{ margin:0 0 10px; font-size:16px; }
+    .footer a{ color: rgba(255,255,255,0.95); text-decoration:none; display:block; margin:6px 0; font-size:14px; }
+    .socials a{ margin-right:8px; font-size:20px; color:#012; background: rgba(255,255,255,0.12); padding:8px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; }
+    .small{ font-size:13px; color: rgba(255,255,255,0.9); margin-top:18px; }
+
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navdiv">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="logo"><a href="#">LMP</a></div>
+        <i class="nav-icon bx bxs-home-smile"></i>
+      </div>
+      <div class="navlinks">
+        <ul>
+          <li><a href="{% url 'vente' %}">Mise en vente</a></li>
+          <li><a href="{% url 'location' %}">Mise en location</a></li>
+          <li><a href="{% url 'profil' %}">Faire une annonce</a></li>
+          <li><a href="{% url 'publications' %}">Mes Publications</a></li>
+          <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- HERO / SPEECH -->
+    <section class="hero" role="region" aria-label="Introduction">
+      <div class="hero-text">
+        <h1>Trouvez le logement ou la parcelle idéale, simplement.</h1>
+        <p>
+          LMP regroupe des annonces fiables et vérifiées pour la vente et la location — appartements,
+          maisons et terrains. Naviguez par quartier, standing ou prix, et contactez directement le propriétaire via WhatsApp.
+          Conçu pour être rapide, transparent et sécurisé.
+        </p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn-primary" href="{% url 'profil' %}">Publier une annonce</a>
+        <a class="btn-primary" href="{% url 'vente' %}">Voir les mises en vente</a>
+      </div>
+    </section>
+
+    <!-- LISTE D'ANNONCES -->
+    <div class="grid" aria-live="polite">
+      {% for annonce in annonces %}
+        <div class="card" aria-label="Annonce {{ forloop.counter }}">
+          <!-- Carousel automatique (unique par annonce via ID) -->
+          <div class="carousel" id="carousel-{{ forloop.counter }}">
+            <div class="carousel-inner">
+              {% for img in annonce.images.all %}
+                <div class="slide{% if forloop.first %} active{% endif %}">
+                  <img src="{{ img.image.url }}" alt="Photo de {{ annonce.titre|default:'logement' }}" loading="lazy">
+                </div>
+              {% empty %}
+                <div class="slide active">
+                  <img src="{% static 'images/placeholder.jpg' %}" alt="Image par défaut" loading="lazy">
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- Contrôles et indicateurs -->
+            {% if annonce.images.all|length > 1 %}
+              <div class="carousel-controls">
+                <button class="prev" aria-label="Précédent">‹</button>
+                <button class="next" aria-label="Suivant">›</button>
+              </div>
+
+              <div class="carousel-indicators" role="tablist">
+                {% for img in annonce.images.all %}
+                  <button class="indicator{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Image {{ forloop.counter }}"></button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Meta -->
+          <div class="meta">
+            <div>
+              <div class="title">{{ annonce.titre|default:"Annonce" }}</div>
+              <div class="description">{{ annonce.description|truncatechars:130|default:"(Aucune description)" }}</div>
+            </div>
+
+            <!-- Badge disponibilité si le champ existe -->
+            <div style="margin-left:auto;">
+              {% if annonce.est_disponible %}
+                <span class="badge available">DISPONIBLE</span>
+              {% elif annonce.est_disponible == False %}
+                <span class="badge unavailable">NON DISPONIBLE</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="meta" style="justify-content:space-between;">
+            <p><strong>Quartier :</strong> {{ annonce.quartier|default:"-" }}</p>
+            <p><strong>Standing :</strong> {{ annonce.standing|default:"-" }}</p>
+          </div>
+
+          <div class="card-footer">
+            <div>
+              <div class="price">{{ annonce.prix|default:"--" }} FCFA</div>
+              <div style="color:var(--muted); font-size:13px;">Tel: {{ annonce.numero_telephone }}</div>
+            </div>
+
+            <div style="text-align:right;">
+              {% if annonce.coordonnes_google_maps %}
+                <div style="margin-bottom:8px;"><a href="{{ annonce.coordonnes_google_maps }}" target="_blank">Voir sur Google Maps</a></div>
+              {% endif %}
+              <a class="btn-whatsapp" href="https://wa.me/{{ annonce.numero_telephone|cut:'+' }}" target="_blank" rel="noopener">
+                <i class="bx bxl-whatsapp"></i>&nbsp; Intéressé
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p>Aucune annonce publiée pour le moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid footer" role="contentinfo">
+      <div>
+        <h4>LMP</h4>
+        <p class="small">LMP facilite la mise en relation entre propriétaires et acheteurs/locataires. Transparence, simplicité et rapidité.</p>
+        <div class="small">© {{ now.year }} LMP. Tous droits réservés.</div>
+      </div>
+
+      <div>
+        <h4>Liens rapides</h4>
+        <a href="{% url 'vente' %}">Mise en vente</a>
+        <a href="{% url 'location' %}">Mise en location</a>
+        <a href="{% url 'profil' %}">Publier une annonce</a>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <a href="tel:+22912345678">+229 12 34 56 78</a>
+        <a href="mailto:contact@lmp.example">contact@lmp.example</a>
+        <div style="margin-top:6px;">Adresse: Cotonou, Bénin</div>
+      </div>
+
+      <div>
+        <h4>Suivez-nous</h4>
+        <div class="socials">
+          <a href="#" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+          <a href="#" aria-label="Twitter"><i class="bx bxl-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        </div>
+        
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS: Carousel automatique + contrôles -->
+  <script>
+    (function(){
+      const CAROUSEL_INTERVAL = 4000; // ms
+
+      document.querySelectorAll('.carousel').forEach(carousel => {
+        const inner = carousel.querySelectorAll('.slide');
+        if(!inner.length) return;
+
+        let index = 0;
+        const indicators = carousel.querySelectorAll('.indicator');
+        const prevBtn = carousel.querySelector('.prev');
+        const nextBtn = carousel.querySelector('.next');
+        let timer = null;
+
+        function goTo(i){
+          if(inner.length <= 1) return;
+          inner[index].classList.remove('active');
+          if(indicators[index]) indicators[index].classList.remove('active');
+          index = (i + inner.length) % inner.length;
+          inner[index].classList.add('active');
+          if(indicators[index]) indicators[index].classList.add('active');
+        }
+
+        function next(){ goTo(index + 1); }
+        function prev(){ goTo(index - 1); }
+
+        // start autoplay only if >1 image
+        if(inner.length > 1){
+          timer = setInterval(next, CAROUSEL_INTERVAL);
+
+          // pause on hover
+          carousel.addEventListener('mouseenter', ()=> { clearInterval(timer); timer = null; });
+          carousel.addEventListener('mouseleave', ()=> { if(!timer) timer = setInterval(next, CAROUSEL_INTERVAL); });
+
+          if(nextBtn) nextBtn.addEventListener('click', ()=> { next(); if(timer){ clearInterval(timer); timer = setInterval(next, CAROUSEL_INTERVAL);} });
+          if(prevBtn) prevBtn.addEventListener('click', ()=> { prev(); if(timer){ clearInterval(timer); timer = setInterval(next, CAROUSEL_INTERVAL);} });
+
+          indicators.forEach((btn, i) => {
+            btn.addEventListener('click', ()=> { goTo(i); if(timer){ clearInterval(timer); timer = setInterval(next, CAROUSEL_INTERVAL);} });
+          });
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

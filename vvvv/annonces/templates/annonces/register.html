@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Document</title> 
+    <style>
+        *{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+body {
+    background-image: url('{% static "annonces/images/k.jpg" %}') ;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+
+.Register-form{
+    width: 420px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px  rgba(0, 0, 0, .2);
+    color: white;
+    border-radius: 10px;
+    padding: 30px 40px;
+}
+
+.Register-form h1{
+    font-size: 36px;
+    text-align: center;
+
+}
+
+.Register-form .input-box{
+    position: relative;
+    width:100%;
+    height: 50px;
+    margin: 30px 0;
+}
+
+.Register-form .input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    border : 2px solid rgba(255,255,255, .2);
+    border-radius: 40px;
+    color: white;
+    font-size: 18px;
+    padding: 20px 45px 20px 20px;
+}
+.Register-form .input-box input::placeholder{
+    color: white;
+}
+.Register-form .input-box i{
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    font-size: 20px;
+
+}
+
+
+.Register-form .btn {
+    background:  white;
+    width: 100%;
+    height: 45px;
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px  rgba(0, 0, 0 ,.1);
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.Register-form .btn:hover{
+    text-decoration: green;
+}
+
+.Register-form .Login-link{
+    margin : 20px 0 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.Register-form .Login-link  p Link{
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+
+}
+
+.Register-form .Login-link:hover{
+    text-decoration: underline;
+}
+    </style>
+</head>
+<body>
+    <div class="Register-form">
+        <h1>Inscription</h1>
+        <form action="{% url 'register' %}" method="POST">
+            {% csrf_token %}
+            <div class="input-box">
+                <input type="text" name="nom" placeholder="Nom" required />
+                <i class='bx bxs-user'></i>    
+            </div>
+
+            <div class="input-box">
+                <input type="text" name="prenom" placeholder="Prenom" required />
+                <i class='bx bxs-user'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="text" name="email" placeholder="Email" required />
+                <i class='bx bxl-gmail'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="date" name="date_de_naissance" placeholder="Date de naissance" required />
+            </div>
+
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Choisissez un mot de passe" required />
+                <i class='bx bxs-lock'></i>
+            </div>
+
+            <button type="submit" class="btn">S'inscrire</button>
+
+            <div class="Login-link">
+                <p> Vous avez déjà un compte ? 
+                    <a href="{% url 'login' %}">Se connecter</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
