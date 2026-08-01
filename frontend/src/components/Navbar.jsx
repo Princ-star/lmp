@@ -7,7 +7,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
   const tabs = [
     {
       id: 'annonces',
-      label: 'Annonces',
+      label: 'Accueil',
       icon: (
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -16,11 +16,14 @@ export default function Navbar({ activeTab, setActiveTab }) {
       )
     },
     {
-      id: 'favoris',
-      label: 'Favoris',
+      id: 'catalogue',
+      label: 'Catalogue',
       icon: (
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
         </svg>
       )
     },
@@ -30,6 +33,15 @@ export default function Navbar({ activeTab, setActiveTab }) {
       icon: (
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      )
+    },
+    {
+      id: 'favoris',
+      label: 'Favoris',
+      icon: (
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
         </svg>
       )
     },
@@ -47,9 +59,17 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   return (
     <>
-      {/* Top Header for Mobile */}
+      {/* Mobile Top Header */}
       <header className="mobile-header glass-panel">
-        <div className="logo">LMP</div>
+        <div className="logo-brand" onClick={() => setActiveTab('annonces')}>
+          {/* Abstract Trajectory SVG Logo */}
+          <svg viewBox="0 0 40 40" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 32 L20 6 L34 32" stroke="#d66853" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 23 L28 23" stroke="#009e96" strokeWidth="2.5" strokeLinecap="round"/>
+            <circle cx="20" cy="6" r="2.5" fill="#d66853"/>
+          </svg>
+          <span className="logo-text">LMP</span>
+        </div>
         {user ? (
           <div className="header-user-badge" onClick={() => setActiveTab('profile')}>
             <div className="avatar-circle">
@@ -64,9 +84,15 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
       {/* Desktop Header */}
       <header className="desktop-header glass-panel">
-        <div className="logo-section">
-          <div className="logo">LMP</div>
+        <div className="logo-brand" onClick={() => setActiveTab('annonces')}>
+          <svg viewBox="0 0 40 40" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 32 L20 6 L34 32" stroke="#d66853" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 23 L28 23" stroke="#009e96" strokeWidth="2.5" strokeLinecap="round"/>
+            <circle cx="20" cy="6" r="2.5" fill="#d66853"/>
+          </svg>
+          <span className="logo-text">LMP</span>
         </div>
+
         <nav className="desktop-nav-links">
           {tabs.map((tab) => (
             <button
@@ -78,6 +104,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
             </button>
           ))}
         </nav>
+
         <div className="auth-section">
           {user ? (
             <div className="user-profile-badge">
@@ -90,7 +117,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
         </div>
       </header>
 
-      {/* Bottom Nav for Mobile */}
+      {/* Mobile Bottom Nav */}
       <nav className="bottom-nav glass-panel">
         {tabs.map((tab) => (
           <button
@@ -104,7 +131,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
         ))}
       </nav>
 
-      {/* Additional Styling inside CSS */}
       <style>{`
         .mobile-header {
           display: flex;
@@ -123,11 +149,18 @@ export default function Navbar({ activeTab, setActiveTab }) {
           margin: 0 auto;
         }
 
-        .logo {
+        .logo-brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+        }
+
+        .logo-text {
           font-family: 'Outfit', sans-serif;
           font-size: 22px;
-          font-weight: 800;
-          color: var(--primary);
+          font-weight: 900;
+          color: #111827;
           letter-spacing: -0.5px;
         }
 
@@ -144,21 +177,21 @@ export default function Navbar({ activeTab, setActiveTab }) {
           width: 32px;
           height: 32px;
           border-radius: 50%;
-          background: var(--primary);
+          background: #d66853;
           color: white;
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Outfit', sans-serif;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 14px;
         }
 
         .login-btn-header {
-          background: var(--primary);
+          background: #d66853;
           color: white;
           border: none;
-          padding: 6px 14px;
+          padding: 6px 16px;
           border-radius: 20px;
           font-size: 13px;
           font-weight: 600;
@@ -192,7 +225,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
           align-items: center;
           background: transparent;
           border: none;
-          color: var(--text-gray);
+          color: #6b7280;
           cursor: pointer;
           flex: 1;
           gap: 4px;
@@ -200,7 +233,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
         }
 
         .bottom-nav-item.active {
-          color: var(--primary);
+          color: #d66853;
         }
 
         .icon-wrapper {
@@ -214,7 +247,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
           font-weight: 600;
         }
 
-        /* Desktop queries */
         @media (min-width: 768px) {
           .mobile-header, .bottom-nav {
             display: none;
@@ -240,22 +272,22 @@ export default function Navbar({ activeTab, setActiveTab }) {
           .nav-link-btn {
             background: transparent;
             border: none;
-            color: var(--text-gray);
-            font-size: 16px;
+            color: #4b5563;
+            font-size: 15px;
             font-weight: 600;
             font-family: 'Outfit', sans-serif;
             cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 10px;
             transition: all 0.2s ease;
           }
           .nav-link-btn:hover {
-            color: var(--primary);
-            background: rgba(0,0,0,0.02);
+            color: #d66853;
+            background: rgba(0,0,0,0.03);
           }
           .nav-link-btn.active {
-            color: var(--primary);
-            background: rgba(214, 104, 83, 0.08);
+            color: #d66853;
+            background: rgba(214, 104, 83, 0.1);
           }
           .user-profile-badge {
             display: flex;
@@ -268,19 +300,20 @@ export default function Navbar({ activeTab, setActiveTab }) {
           }
           .logout-btn-desktop {
             background: transparent;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.12);
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             cursor: pointer;
             font-weight: 600;
           }
           .logout-btn-desktop:hover {
-            background: rgba(0,0,0,0.02);
+            background: rgba(0,0,0,0.04);
           }
           .login-btn-desktop {
             padding: 10px 24px;
             font-size: 14px;
+            border-radius: 12px;
           }
         }
       `}</style>

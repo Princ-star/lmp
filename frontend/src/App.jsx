@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
+import Catalogue from './pages/Catalogue';
 import PropertyDetail from './pages/PropertyDetail';
 import LoginRegister from './pages/LoginRegister';
 import Dashboard from './pages/Dashboard';
 import Messages from './pages/Messages';
 
 function MainApp() {
-  const [activeTab, setActiveTab] = useState('annonces'); // 'annonces', 'favoris', 'messages', 'profile'
+  const [activeTab, setActiveTab] = useState('annonces'); // 'annonces', 'catalogue', 'favoris', 'messages', 'profile'
   const [selectedAnnonceId, setSelectedAnnonceId] = useState(null);
   const [activePartnerId, setActivePartnerId] = useState(null);
   const { user, loading } = useAuth();
@@ -43,6 +45,11 @@ function MainApp() {
     setActiveTab('messages');
   };
 
+  const navigateToTab = (tab) => {
+    setSelectedAnnonceId(null);
+    setActiveTab(tab);
+  };
+
   const renderTabContent = () => {
     if (selectedAnnonceId) {
       return (
@@ -58,31 +65,41 @@ function MainApp() {
 
     switch (activeTab) {
       case 'annonces':
+      case 'accueil':
         return (
           <Home 
             onSelectAnnonce={handleSelectAnnonce} 
-            onNavigateToPublish={() => setActiveTab('profile')}
+            onNavigateToPublish={() => navigateToTab('profile')}
+            onNavigateToCatalogue={() => navigateToTab('catalogue')}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+          />
+        );
+      case 'catalogue':
+        return (
+          <Catalogue 
+            onSelectAnnonce={handleSelectAnnonce}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
           />
         );
       case 'favoris':
         return (
-          <div className="favorites-page animate-fade-in" style={{ padding: '75px 16px 20px 16px' }}>
+          <div className="favorites-page animate-fade-in" style={{ padding: '24px 16px 20px 16px', maxWidth: '1280px', margin: '0 auto' }}>
             <h2 className="section-title">Mes Favoris</h2>
-            <p className="listings-subtitle" style={{ marginBottom: '20px' }}>Retrouvez vos logements coup de cœur</p>
+            <p className="listings-subtitle" style={{ marginBottom: '20px' }}>Retrouvez vos logements coup de cœur enregistrés</p>
             {favorites.length === 0 ? (
-              <div className="no-results glass-panel" style={{ padding: '40px', textAlign: 'center' }}>
-                <p>Vous n'avez pas encore ajouté de favoris.</p>
-                <button className="btn-primary" style={{ marginTop: '10px' }} onClick={() => setActiveTab('annonces')}>Découvrir des biens</button>
+              <div className="no-results glass-panel" style={{ padding: '60px 40px', textAlign: 'center', borderRadius: '20px' }}>
+                <p style={{ fontSize: '16px', color: '#6b7280' }}>Vous n'avez pas encore ajouté de favoris.</p>
+                <button className="cta-btn-colored" style={{ marginTop: '16px' }} onClick={() => navigateToTab('catalogue')}>
+                  Explorer le catalogue
+                </button>
               </div>
             ) : (
-              <Home 
-                onSelectAnnonce={handleSelectAnnonce} 
-                onNavigateToPublish={() => setActiveTab('profile')}
+              <Catalogue 
+                onSelectAnnonce={handleSelectAnnonce}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
-                onlyFavorites={true}
               />
             )}
           </div>
@@ -91,8 +108,8 @@ function MainApp() {
         if (!user) {
           return (
             <LoginRegister 
-              onAuthSuccess={() => setActiveTab('messages')}
-              onBack={() => setActiveTab('annonces')}
+              onAuthSuccess={() => navigateToTab('messages')}
+              onBack={() => navigateToTab('annonces')}
             />
           );
         }
@@ -106,8 +123,8 @@ function MainApp() {
         if (!user) {
           return (
             <LoginRegister 
-              onAuthSuccess={() => setActiveTab('profile')}
-              onBack={() => setActiveTab('annonces')}
+              onAuthSuccess={() => navigateToTab('profile')}
+              onBack={() => navigateToTab('annonces')}
             />
           );
         }
@@ -115,7 +132,15 @@ function MainApp() {
           <Dashboard onSelectAnnonce={handleSelectAnnonce} />
         );
       default:
-        return <div>Onglet inconnu</div>;
+        return (
+          <Home 
+            onSelectAnnonce={handleSelectAnnonce} 
+            onNavigateToPublish={() => navigateToTab('profile')}
+            onNavigateToCatalogue={() => navigateToTab('catalogue')}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+          />
+        );
     }
   };
 
@@ -163,10 +188,11 @@ function MainApp() {
 
   return (
     <div className={`app-container ${activeTab === 'profile' ? 'theme-proprietaire' : 'theme-locataire'}`}>
-      <Navbar activeTab={activeTab} setActiveTab={(tab) => { setSelectedAnnonceId(null); setActiveTab(tab); }} />
+      <Navbar activeTab={activeTab === 'accueil' ? 'annonces' : activeTab} setActiveTab={navigateToTab} />
       <main className="main-content-wrapper">
         {renderTabContent()}
       </main>
+      <Footer setActiveTab={navigateToTab} />
     </div>
   );
 }

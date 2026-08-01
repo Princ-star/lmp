@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, toggleFavorite, onlyFavorites = false }) {
+export default function Home({ onSelectAnnonce, onNavigateToPublish, onNavigateToCatalogue, favorites, toggleFavorite, onlyFavorites = false }) {
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState(''); // 'vente', 'location', ''
+  const [typeFilter, setTypeFilter] = useState('');
   const [standingFilter, setStandingFilter] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [greeting, setGreeting] = useState('Bonjour');
@@ -26,7 +26,6 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
     { value: 'parcelle_vente', label: "Parcelle (Vente)" }
   ];
 
-  // Dynamic greetings based on time
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
@@ -72,73 +71,76 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
   return (
     <div className="home-container animate-fade-in">
       
-      {/* Moving gradient premium Hero header */}
-      <section className="hero-section glass-panel">
+      {/* FULL-WIDTH HERO WITH BACKGROUND IMAGE & GRADIENT */}
+      <section className="hero-fullwidth">
+        <div className="hero-bg-image" style={{ backgroundImage: `url(/hero_bg.jpg)` }}></div>
         <div className="hero-gradient-overlay"></div>
         
-        {/* Split layout: left text, right image */}
-        <div className="hero-split">
-          <div className="hero-text-col">
-            <span className="welcome-tag">
-              {greeting === 'morning' && (
-                <>Bonjour <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></>
-              )}
-              {greeting === 'afternoon' && (
-                <>Bon après-midi <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41"/><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a5.5 5.5 0 0 1 1 10.9Z"/></svg></>
-              )}
-              {greeting === 'evening' && (
-                <>Bonsoir <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></>
-              )}
-              , bienvenue chez LMP
-            </span>
+        <div className="hero-content">
+          <span className="welcome-tag-glass">
+            {greeting === 'morning' && (
+              <>Bonjour <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></>
+            )}
+            {greeting === 'afternoon' && (
+              <>Bon après-midi <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41"/><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a5.5 5.5 0 0 1 1 10.9Z"/></svg></>
+            )}
+            {greeting === 'evening' && (
+              <>Bonsoir <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></>
+            )}
+            , bienvenue sur LMP
+          </span>
 
-            <h1 className="hero-title">
-              Trouvez votre prochain
-              <br />
-              <span className="highlight-text">CHEZ VOUS</span>
-            </h1>
-            <p className="hero-subtitle">Explorez les logements disponibles en quelques clics et contactez directement les propriétaires.</p>
-            
-            <div className="search-bar-wrapper">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" className="search-icon">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-              </svg>
-              <input 
-                type="text" 
-                placeholder="Dans quel quartier ? (Ex: Bidossessi, Fidjrossè...)" 
-                value={search} 
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-input"
-              />
-            </div>
+          <h1 className="hero-title-bold">
+            Trouvez votre prochain
+            <br />
+            <span className="chez-vous-highlight">CHEZ VOUS</span>
+          </h1>
 
-            <div className="hero-actions">
-              <button className="btn-glass-primary search-cta" onClick={() => setTypeFilter(typeFilter === 'location' ? '' : 'location')}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-                Trouver ma chambre
-              </button>
-              <button className="btn-glass-outline publish-btn" onClick={onNavigateToPublish}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>
-                </svg>
-                Publier une annonce
-              </button>
-            </div>
+          <p className="hero-desc">
+            La plateforme numéro 1 pour trouver un logement vérifié et contacter directement le propriétaire au Bénin.
+          </p>
+
+          <div className="search-bar-glass">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" className="search-icon">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Ex: Cadjehoun, Calavi, Akpakpa..." 
+              value={search} 
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input-glass"
+            />
           </div>
 
-          {/* Hero Image */}
-          <div className="hero-image-col">
-            <div className="hero-image-wrapper">
-              <img src="/house_transition.png" alt="Propriétaire remettant les clés à un locataire" className="hero-img" />
-              <div className="hero-img-glass-badge">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>+3 500 logements vérifiés</span>
-              </div>
-            </div>
+          {/* Centered CTA Buttons */}
+          <div className="hero-cta-group">
+            {/* Colored CTA Button */}
+            <button className="cta-btn-colored" onClick={onNavigateToCatalogue}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+              Explorer le catalogue
+            </button>
+
+            {/* Transparent Liquid Glass CTA Button */}
+            <button className="cta-btn-liquid-glass" onClick={onNavigateToPublish}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Publier une annonce
+            </button>
+          </div>
+
+          {/* Floating Trust Pill */}
+          <div className="trust-pill-glass">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#009e96" strokeWidth="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Plus de 3 500 logements certifiés & vérifiés sur le terrain
           </div>
         </div>
       </section>
@@ -165,7 +167,7 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
               </svg>
             </div>
             <h4>Discutez</h4>
-            <p>Échangez via notre messagerie intégrée avec les bailleurs.</p>
+            <p>Échangez directement via la messagerie avec les propriétaires.</p>
           </div>
           <div className="step-card glass-panel">
             <div className="step-num">3</div>
@@ -174,49 +176,8 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
             </div>
-            <h4>Visitez</h4>
-            <p>Planifiez une visite physique au moment qui vous convient.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Quick filters criteria panel */}
-      <section className="filters-section glass-panel">
-        <h3 className="section-title-small">Ajuster vos critères de recherche</h3>
-        <div className="filters-grid">
-          <div className="filter-item">
-            <label>Type de transaction</label>
-            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="glass-select">
-              <option value="">Tous les types</option>
-              <option value="location">Mise en location</option>
-              <option value="vente">Mise en vente</option>
-            </select>
-          </div>
-          
-          <div className="filter-item">
-            <label>Standing du bien</label>
-            <select value={standingFilter} onChange={(e) => setStandingFilter(e.target.value)} className="glass-select">
-              <option value="">Tous les standings</option>
-              {standings.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-item">
-            <label>Budget maximum : {maxPrice ? `${Number(maxPrice).toLocaleString()} FCFA` : 'Illimité'}</label>
-            <div className="range-container">
-              <input 
-                type="range" 
-                min="0" 
-                max="1500000" 
-                step="25000" 
-                value={maxPrice} 
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="price-slider"
-              />
-              {maxPrice && <button className="clear-price-btn" onClick={() => setMaxPrice('')}>Réinitialiser</button>}
-            </div>
+            <h4>Visitez & Emménagez</h4>
+            <p>Planifiez une visite physique et récupérez les clés de votre nouveau chez vous.</p>
           </div>
         </div>
       </section>
@@ -227,101 +188,103 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
           <svg viewBox="0 0 24 24" width="14" height="14" fill="#f39c12" stroke="#f39c12" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
-          <strong>4.8/5</strong> de satisfaction locataires
+          <strong>4.9/5</strong> d'avis positifs
         </div>
         <div className="ticker-item">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
-            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><path d="M9 16h6v6"/><line x1="8" y1="6" x2="8" y2="6.01"/><line x1="16" y1="6" x2="16" y2="6.01"/>
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><path d="M9 16h6v6"/>
           </svg>
-          <strong>+120</strong> nouveaux logements cette semaine
+          <strong>+150</strong> biens ajoutés cette semaine
         </div>
         <div className="ticker-item">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
-            <path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 1.5 1.5M15.5 7.5 14 6"/>
+            <path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5"/>
           </svg>
-          <strong>2 500+</strong> visites organisées
+          <strong>3 200+</strong> remises de clés réussies
         </div>
       </div>
 
-      {/* Content listings grid */}
+      {/* Content listings grid (Featured 6 max) */}
       <section className="listings-section">
         <div className="listings-section-header">
           <div>
             <h2 className="section-title">Logements à la une</h2>
-            <p className="listings-subtitle">Explorez les offres exclusives du jour</p>
+            <p className="listings-subtitle">Sélection des meilleures offres de la semaine à Cotonou et Calavi</p>
           </div>
-          <div className="listings-count-badge">
-            {annonces.length} logement{annonces.length > 1 ? 's' : ''} trouvé{annonces.length > 1 ? 's' : ''}
-          </div>
+          <button className="view-all-catalogue-btn" onClick={onNavigateToCatalogue}>
+            Voir tout le catalogue ({annonces.length}) →
+          </button>
         </div>
 
+        {/* Listings Grid */}
         {loading ? (
-          <div className="spinner-wrapper">
+          <div className="loading-container">
             <div className="spinner"></div>
-            <span>Chargement des offres de rêve...</span>
+            <p>Recherche des logements en cours...</p>
           </div>
         ) : annonces.length === 0 ? (
           <div className="no-results glass-panel">
-            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>
-            </svg>
-            <p>Aucun logement ne correspond à vos critères de recherche actuellement.</p>
+            <p>Aucun logement trouvé avec ces critères.</p>
+            <button className="btn-primary" onClick={() => { setTypeFilter(''); setStandingFilter(''); setMaxPrice(''); setSearch(''); }}>
+              Effacer la recherche
+            </button>
           </div>
         ) : (
           <div className="listings-grid">
-            {annonces.map((annonce, index) => {
+            {annonces.slice(0, 6).map((annonce) => {
               const isFav = favorites.includes(annonce.id);
-              const mainImage = annonce.images && annonce.images.length > 0 
-                ? annonce.images[0].image_url 
-                : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80';
-              
               return (
                 <div 
                   key={annonce.id} 
-                  className="listing-card glass-panel glass-panel-hover" 
+                  className="annonce-card glass-panel animate-card"
                   onClick={() => onSelectAnnonce(annonce.id)}
-                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <div className="image-container">
-                    <img src={mainImage} alt={annonce.standing} className="listing-image" />
-                    <div className="card-badge">{annonce.type_annonce === 'location' ? 'Location' : 'Vente'}</div>
+                  <div className="card-image-wrapper">
+                    {annonce.photo_principale ? (
+                      <img src={annonce.photo_principale} alt={annonce.titre} className="card-img" />
+                    ) : (
+                      <div className="card-img-placeholder">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        </svg>
+                      </div>
+                    )}
+                    <span className={`badge-type ${annonce.type_annonce}`}>
+                      {annonce.type_annonce === 'location' ? 'Location' : 'Vente'}
+                    </span>
                     <button 
-                      className={`favorite-btn ${isFav ? 'active' : ''}`}
+                      className={`fav-btn ${isFav ? 'active' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleFavorite(annonce.id);
                       }}
                     >
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill={isFav ? "var(--primary)" : "none"} stroke="currentColor" strokeWidth="2.5">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill={isFav ? '#d66853' : 'none'} stroke={isFav ? '#d66853' : 'white'} strokeWidth="2">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                       </svg>
                     </button>
                   </div>
-                  <div className="listing-info">
-                    <div className="listing-header-row">
-                      <h4 className="listing-title">{annonce.standing.replace('_', ' ').toUpperCase()}</h4>
-                      <div className="rating-badge">
-                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="currentColor">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                        </svg>
-                        <span>4.8</span>
-                      </div>
-                    </div>
-                    <p className="listing-location">
-                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px', color: 'var(--primary)' }}>
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+
+                  <div className="card-content">
+                    <div className="card-location">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                       </svg>
-                      {annonce.quartier}, Abomey-Calavi
-                    </p>
-                    
-                    <div className="listing-badges">
-                      <span className="l-badge">⚡ Compteur Perso</span>
-                      <span className="l-badge">💧 Eau SONEB</span>
+                      {annonce.quartier || 'Cotonou'}
                     </div>
-                    
-                    <div className="listing-price-row">
-                      <span className="price-val">{annonce.prix.toLocaleString()} FCFA</span>
-                      <span className="price-period">{annonce.type_annonce === 'location' ? '/ mois' : ''}</span>
+
+                    <h3 className="card-title">{annonce.titre}</h3>
+
+                    <div className="card-tags">
+                      <span className="tag-standing">{annonce.get_standing_display || annonce.standing}</span>
+                    </div>
+
+                    <div className="card-footer">
+                      <div className="card-price">
+                        {Number(annonce.prix).toLocaleString('fr-FR')} FCFA
+                        {annonce.type_annonce === 'location' && <span className="price-freq">/mois</span>}
+                      </div>
+                      <span className="card-link">Voir →</span>
                     </div>
                   </div>
                 </div>
@@ -329,456 +292,368 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
             })}
           </div>
         )}
+
+        {/* Big Bottom Catalogue CTA */}
+        {annonces.length > 6 && (
+          <div className="catalogue-bottom-cta">
+            <button className="cta-btn-colored large" onClick={onNavigateToCatalogue}>
+              Accéder à la totalité du catalogue ({annonces.length} logements) →
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* Footer */}
-      <footer className="footer glass-panel">
-        <div className="footer-logo">LMP</div>
-        <p className="footer-desc">Trouvez Facilement votre prochain Chez vous</p>
-        <div className="footer-links">
-          <a href="#explorer">Explorer</a>
-          <a href="#destinations">Destinations</a>
-          <a href="#hote">Devenir Hôte</a>
-          <a href="#confidentialite">Confidentialité</a>
-          <a href="#conditions">Conditions</a>
+      {/* Owner Banner (Tunnel conversion pour propriétaires) */}
+      <section className="owner-conversion-banner">
+        <div className="owner-banner-content">
+          <span className="owner-tag">Propriétaires & Bailleurs</span>
+          <h2>Vous possédez une maison ou un appartement à louer ?</h2>
+          <p>Publiez gratuitement votre annonce en moins de 3 minutes et touchez des milliers de locataires qualifiés au Bénin.</p>
+          <button className="cta-btn-colored owner-btn" onClick={onNavigateToPublish}>
+            Publier mon bien gratuitement →
+          </button>
         </div>
-        <div className="footer-bottom">
-          <span>© 2026 LMP Inc. Tous droits réservés.</span>
-        </div>
-      </footer>
+      </section>
 
       <style>{`
         .home-container {
-          padding: 85px 16px 20px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+          padding-bottom: 40px;
         }
 
-        .hero-section {
-          padding: 28px 24px;
-          margin-bottom: 24px;
+        /* HERO FULL WIDTH WITH IMAGE & OVERLAY */
+        .hero-fullwidth {
           position: relative;
+          min-height: 520px;
+          border-radius: 28px;
           overflow: hidden;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(240, 235, 230, 0.5));
-          text-align: center;
+          display: flex;
+          align-items: center;
+          padding: 60px 40px;
+          margin-top: 10px;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+        }
+
+        .hero-bg-image {
+          position: absolute;
+          inset: 0;
+          background-size: cover;
+          background-position: center 30%;
+          transition: transform 10s ease;
+        }
+
+        .hero-fullwidth:hover .hero-bg-image {
+          transform: scale(1.03);
         }
 
         .hero-gradient-overlay {
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: radial-gradient(ellipse at top left, rgba(214, 104, 83, 0.1), transparent 60%),
-                      radial-gradient(ellipse at bottom right, rgba(0, 158, 150, 0.08), transparent 60%);
-          z-index: 1;
+          inset: 0;
+          background: linear-gradient(
+            to right, 
+            rgba(15, 12, 9, 0.92) 0%, 
+            rgba(15, 12, 9, 0.78) 45%, 
+            rgba(15, 12, 9, 0.35) 75%, 
+            rgba(15, 12, 9, 0.1) 100%
+          );
         }
 
-        .hero-split {
+        .hero-content {
           position: relative;
           z-index: 2;
+          max-width: 680px;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: 28px;
+          gap: 20px;
         }
 
-        .hero-text-col {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-        }
-
-        .welcome-tag {
+        .welcome-tag-glass {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--primary);
-          background: var(--primary-light);
-          padding: 6px 14px;
+          padding: 6px 16px;
           border-radius: 20px;
-          margin-bottom: 16px;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
+          background: rgba(255, 255, 255, 0.12);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.95);
+          font-size: 13px;
+          font-weight: 600;
+          align-self: flex-start;
         }
 
-        .hero-title {
-          font-size: 34px;
-          line-height: 1.15;
-          color: var(--text-dark);
-          margin-bottom: 14px;
-          letter-spacing: -0.8px;
-        }
-
-        .highlight-text {
-          display: block;
-          font-size: 46px;
+        .hero-title-bold {
+          font-family: 'Outfit', sans-serif;
+          font-size: 42px;
           font-weight: 900;
-          letter-spacing: -2px;
-          background: linear-gradient(135deg, var(--primary), #c0392b 40%, var(--primary-hover));
+          color: #ffffff;
+          line-height: 1.15;
+          letter-spacing: -1px;
+        }
+
+        .chez-vous-highlight {
+          font-size: 58px;
+          font-weight: 900;
+          letter-spacing: 2px;
+          background: linear-gradient(135deg, #ff7e67 0%, #d66853 50%, #ffa07a 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          background-clip: text;
-          line-height: 1.1;
-          margin-top: 4px;
-          text-shadow: none;
+          text-shadow: 0 4px 20px rgba(214,104,83,0.3);
         }
 
-        .hero-subtitle {
-          color: var(--text-gray);
-          font-size: 15px;
+        .hero-desc {
+          color: rgba(255, 255, 255, 0.85);
+          font-size: 16px;
           line-height: 1.6;
-          margin-bottom: 24px;
-          max-width: 400px;
+          max-width: 540px;
         }
 
-        .search-bar-wrapper {
-          display: flex;
-          align-items: center;
-          background: rgba(255, 255, 255, 0.95);
-          border: 1px solid rgba(0, 0, 0, 0.08);
-          border-radius: 30px;
-          padding: 10px 18px;
-          gap: 12px;
-          margin-bottom: 24px;
-          box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-          transition: all 0.3s ease;
-          width: 100%;
-          max-width: 480px;
-        }
-
-        .search-bar-wrapper:focus-within {
-          border-color: var(--primary);
-          box-shadow: 0 8px 30px var(--primary-light);
-          transform: translateY(-2px);
+        .search-bar-glass {
+          position: relative;
+          max-width: 500px;
         }
 
         .search-icon {
-          color: var(--primary);
-          flex-shrink: 0;
+          position: absolute;
+          left: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: rgba(255,255,255,0.7);
         }
 
-        .search-input {
-          border: none;
-          background: transparent;
-          flex: 1;
-          outline: none;
-          font-size: 14px;
-          color: var(--text-dark);
-          font-weight: 500;
-        }
-
-        .hero-actions {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
+        .search-input-glass {
           width: 100%;
-          max-width: 480px;
+          padding: 14px 20px 14px 48px;
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          color: white;
+          font-family: 'Outfit', sans-serif;
+          font-size: 15px;
+          outline: none;
+          transition: all 0.25s ease;
         }
 
-        /* Glassmorphism CTA buttons */
-        .btn-glass-primary {
+        .search-input-glass::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-input-glass:focus {
+          background: rgba(255, 255, 255, 0.25);
+          border-color: #d66853;
+          box-shadow: 0 0 0 4px rgba(214, 104, 83, 0.25);
+        }
+
+        /* HERO CTA BUTTONS */
+        .hero-cta-group {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-top: 8px;
+          flex-wrap: wrap;
+        }
+
+        .cta-btn-colored {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 10px;
-          padding: 16px 24px;
-          font-size: 15px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-          cursor: pointer;
-          border: none;
-          border-radius: 16px;
-          background: var(--primary);
+          padding: 14px 28px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #d66853 0%, #b84c38 100%);
           color: white;
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          box-shadow: 0 8px 32px rgba(214, 104, 83, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          font-family: 'Outfit', sans-serif;
+          font-weight: 700;
+          font-size: 15px;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 8px 24px rgba(214, 104, 83, 0.4);
+          transition: all 0.25s ease;
+        }
+
+        .cta-btn-colored:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(214, 104, 83, 0.55);
+          background: linear-gradient(135deg, #e5735e 0%, #c4533e 100%);
+        }
+
+        /* LIQUID GLASS TRANSPARENT BUTTON */
+        .cta-btn-liquid-glass {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 14px 28px;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.12);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          color: white;
+          font-family: 'Outfit', sans-serif;
+          font-weight: 700;
+          font-size: 15px;
+          cursor: pointer;
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+          transition: all 0.25s ease;
           position: relative;
           overflow: hidden;
         }
 
-        .btn-glass-primary::before {
+        .cta-btn-liquid-glass::before {
           content: '';
           position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 1px;
-          background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
         }
 
-        .btn-glass-primary:hover {
-          background: var(--primary-hover);
-          transform: translateY(-3px);
-          box-shadow: 0 12px 40px rgba(214, 104, 83, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+        .cta-btn-liquid-glass:hover {
+          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.22);
+          border-color: rgba(255, 255, 255, 0.6);
+          box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3), inset 0 1px 2px 0 rgba(255, 255, 255, 0.6);
         }
 
-        .btn-glass-primary:active {
-          transform: translateY(0px);
+        .cta-btn-liquid-glass:hover::before {
+          opacity: 1;
         }
 
-        .btn-glass-outline {
+        .trust-pill-glass {
           display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          padding: 15px 24px;
-          font-size: 15px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-          cursor: pointer;
-          border-radius: 16px;
-          background: rgba(255, 255, 255, 0.55);
-          color: var(--text-dark);
-          border: 1.5px solid rgba(214, 104, 83, 0.25);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .btn-glass-outline:hover {
-          background: rgba(255, 255, 255, 0.75);
-          border-color: var(--primary);
-          color: var(--primary);
-          transform: translateY(-3px);
-          box-shadow: 0 8px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
-        }
-
-        /* Hero image */
-        .hero-image-col {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-        }
-
-        .hero-image-wrapper {
-          position: relative;
-          width: 100%;
-          max-width: 340px;
-        }
-
-        .hero-img {
-          width: 100%;
-          border-radius: 24px;
-          object-fit: cover;
-          aspect-ratio: 4/3;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-          display: block;
-        }
-
-        .hero-img-glass-badge {
-          position: absolute;
-          bottom: -14px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(255,255,255,0.85);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(0, 158, 150, 0.2);
-          border-radius: 30px;
-          padding: 8px 18px;
-          display: flex;
           align-items: center;
           gap: 8px;
           font-size: 12px;
-          font-weight: 700;
-          color: var(--secondary);
-          white-space: nowrap;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+          color: rgba(255,255,255,0.85);
+          font-weight: 600;
+          margin-top: 4px;
         }
 
-        .search-cta {
-          padding: 16px 24px;
-          font-size: 16px;
-        }
-
-        .publish-btn {
-          padding: 16px 24px;
-        }
-
-        /* Steps Section */
+        /* STEPS SECTION */
         .steps-section {
-          padding: 24px 20px;
-          margin-bottom: 24px;
-          text-align: center;
+          padding: 32px 24px;
+          border-radius: 20px;
         }
 
         .section-title-centered {
-          font-size: 18px;
-          margin-bottom: 20px;
-          color: var(--text-dark);
+          text-align: center;
+          font-family: 'Outfit', sans-serif;
+          font-size: 22px;
+          font-weight: 800;
+          color: #1f2937;
+          margin-bottom: 24px;
         }
 
         .steps-grid {
-          display: flex;
-          flex-direction: column;
+          display: grid;
+          grid-template-columns: 1fr;
           gap: 16px;
         }
 
         .step-card {
-          padding: 20px 16px;
-          background: rgba(255,255,255,0.4);
+          padding: 24px;
+          border-radius: 16px;
           position: relative;
-          overflow: hidden;
+          text-align: center;
         }
 
         .step-num {
           position: absolute;
-          top: 10px;
-          right: 14px;
-          font-family: 'Outfit', sans-serif;
-          font-size: 32px;
+          top: 12px;
+          left: 16px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: rgba(214,104,83,0.12);
+          color: #d66853;
+          font-size: 12px;
           font-weight: 800;
-          color: rgba(0,0,0,0.04);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .step-icon {
-          font-size: 28px;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
         }
 
         .step-card h4 {
-          font-size: 15px;
+          font-family: 'Outfit', sans-serif;
+          font-size: 16px;
+          font-weight: 700;
+          color: #111827;
           margin-bottom: 6px;
-          color: var(--text-dark);
         }
 
         .step-card p {
-          font-size: 12px;
-          color: var(--text-gray);
-          line-height: 1.4;
-        }
-
-        /* Filters Section */
-        .filters-section {
-          padding: 20px;
-          margin-bottom: 24px;
-        }
-
-        .section-title-small {
           font-size: 13px;
-          color: var(--text-gray);
-          margin-bottom: 16px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          font-weight: 700;
+          color: #6b7280;
+          line-height: 1.5;
         }
 
-        .filters-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .filter-item {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .filter-item label {
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--text-dark);
-        }
-
-        .glass-select {
-          background: var(--input-bg);
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          border-radius: 12px;
-          padding: 12px 14px;
-          font-size: 14px;
-          font-weight: 500;
-          outline: none;
-          cursor: pointer;
-        }
-
-        .range-container {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .price-slider {
-          -webkit-appearance: none;
-          width: 100%;
-          height: 6px;
-          border-radius: 3px;
-          background: rgba(0, 0, 0, 0.06);
-          outline: none;
-        }
-
-        .price-slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: var(--primary);
-          cursor: pointer;
-          box-shadow: 0 2px 6px var(--primary-light);
-          transition: transform 0.2s ease;
-        }
-
-        .price-slider::-webkit-slider-thumb:hover {
-          transform: scale(1.2);
-        }
-
-        .clear-price-btn {
-          align-self: flex-start;
-          background: transparent;
-          border: none;
-          color: var(--primary);
-          font-size: 11px;
-          font-weight: 700;
-          cursor: pointer;
-        }
-
-        /* Stats Banner Ticker */
+        /* STATS TICKER */
         .stats-ticker-banner {
           display: flex;
-          flex-direction: column;
-          padding: 14px;
-          margin-bottom: 24px;
-          gap: 10px;
+          justify-content: space-around;
           align-items: center;
-          text-align: center;
-          background: linear-gradient(to right, rgba(0, 158, 150, 0.03), rgba(214, 104, 83, 0.03));
+          padding: 16px 24px;
+          border-radius: 16px;
+          flex-wrap: wrap;
+          gap: 12px;
+          font-size: 13px;
+          color: #4b5563;
         }
 
-        .ticker-item {
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--text-dark);
+        /* LISTINGS SECTION */
+        .listings-section {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
         }
 
-        /* Listings Section Header */
         .listings-section-header {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-
-        .listings-count-badge {
-          background: var(--primary-light);
-          color: var(--primary);
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 700;
+          align-items: flex-end;
+          flex-wrap: wrap;
+          gap: 12px;
         }
 
         .section-title {
-          font-size: 22px;
-          letter-spacing: -0.5px;
+          font-family: 'Outfit', sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: #111827;
         }
 
         .listings-subtitle {
-          color: var(--text-gray);
-          font-size: 13px;
+          font-size: 14px;
+          color: #6b7280;
+          margin-top: 2px;
+        }
+
+        .view-all-catalogue-btn {
+          background: none;
+          border: none;
+          color: #d66853;
+          font-family: 'Outfit', sans-serif;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+        }
+
+        .view-all-catalogue-btn:hover {
+          transform: translateX(4px);
         }
 
         .listings-grid {
@@ -787,320 +662,99 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
           gap: 20px;
         }
 
-        /* Listing card enhancements */
-        .listing-card {
-          cursor: pointer;
-          overflow: hidden;
-          padding: 0;
-          animation: fadeInUp 0.5s ease-out forwards;
-          opacity: 0;
+        .catalogue-bottom-cta {
+          text-align: center;
+          margin-top: 20px;
         }
 
-        .image-container {
-          position: relative;
-          height: 220px;
-          width: 100%;
-          overflow: hidden;
-          background: #eee;
+        .cta-btn-colored.large {
+          padding: 16px 36px;
+          font-size: 16px;
+          border-radius: 16px;
         }
 
-        .listing-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .listing-card:hover .listing-image {
-          transform: scale(1.05);
-        }
-
-        .card-badge {
-          position: absolute;
-          top: 14px;
-          left: 14px;
-          background: var(--primary);
+        /* OWNER CONVERSION BANNER */
+        .owner-conversion-banner {
+          border-radius: 24px;
+          background: linear-gradient(135deg, #0d2826 0%, #153c39 100%);
+          padding: 48px 36px;
           color: white;
-          padding: 6px 14px;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 16px 40px rgba(0,158,150,0.15);
+        }
+
+        .owner-conversion-banner::before {
+          content: '';
+          position: absolute;
+          top: -50px;
+          right: -50px;
+          width: 250px;
+          height: 250px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(0,158,150,0.25) 0%, transparent 70%);
+        }
+
+        .owner-banner-content {
+          position: relative;
+          z-index: 2;
+          max-width: 600px;
+        }
+
+        .owner-tag {
+          display: inline-block;
+          background: rgba(0,158,150,0.2);
+          color: #009e96;
+          border: 1px solid rgba(0,158,150,0.4);
+          padding: 4px 14px;
           border-radius: 20px;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .favorite-btn {
-          position: absolute;
-          top: 14px;
-          right: 14px;
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(4px);
-          border: none;
-          border-radius: 50%;
-          width: 38px;
-          height: 38px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          color: var(--text-dark);
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .favorite-btn.active {
-          color: var(--primary);
-          background: white;
-          transform: scale(1.05);
-        }
-
-        .favorite-btn:hover {
-          transform: scale(1.15);
-        }
-
-        .listing-info {
-          padding: 20px;
-        }
-
-        .listing-header-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 6px;
-        }
-
-        .listing-title {
-          font-size: 16px;
-          font-weight: 700;
-          color: var(--text-dark);
-        }
-
-        .rating-badge {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          background: rgba(0, 0, 0, 0.04);
-          padding: 4px 10px;
-          border-radius: 12px;
-          font-size: 11px;
-          font-weight: 700;
-        }
-
-        .rating-badge svg {
-          color: #f39c12;
-        }
-
-        .listing-location {
-          color: var(--text-gray);
-          font-size: 13px;
+          letter-spacing: 1px;
           margin-bottom: 14px;
         }
 
-        .listing-badges {
-          display: flex;
-          gap: 8px;
-          margin-bottom: 16px;
-          flex-wrap: wrap;
-        }
-
-        .l-badge {
-          font-size: 10px;
-          font-weight: 700;
-          color: var(--secondary);
-          background: rgba(0, 158, 150, 0.08);
-          padding: 5px 10px;
-          border-radius: 8px;
-        }
-
-        .listing-price-row {
-          display: flex;
-          align-items: baseline;
-          gap: 4px;
-        }
-
-        .price-val {
-          font-family: 'Outfit', sans-serif;
-          font-size: 20px;
-          font-weight: 800;
-          color: var(--primary);
-        }
-
-        .price-period {
-          font-size: 12px;
-          color: var(--text-gray);
-          font-weight: 700;
-        }
-
-        /* Spinner */
-        .spinner-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 60px 0;
-          gap: 16px;
-          color: var(--text-gray);
-        }
-
-        .spinner {
-          width: 36px;
-          height: 36px;
-          border: 4px solid rgba(0,0,0,0.06);
-          border-top-color: var(--primary);
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        .no-results {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 40px;
-          color: var(--text-gray);
-          text-align: center;
-          gap: 12px;
-        }
-
-        /* Footer */
-        .footer {
-          margin-top: 40px;
-          padding: 30px 20px;
-          text-align: center;
-        }
-
-        .footer-logo {
+        .owner-banner-content h2 {
           font-family: 'Outfit', sans-serif;
           font-size: 26px;
           font-weight: 800;
-          color: var(--primary);
-          margin-bottom: 6px;
+          margin-bottom: 10px;
+          line-height: 1.3;
         }
 
-        .footer-desc {
-          font-size: 13px;
-          color: var(--text-gray);
+        .owner-banner-content p {
+          color: rgba(255,255,255,0.75);
+          font-size: 15px;
+          line-height: 1.6;
           margin-bottom: 24px;
         }
 
-        .footer-links {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 16px;
-          margin-bottom: 24px;
+        .owner-btn {
+          background: linear-gradient(135deg, #009e96 0%, #007a74 100%) !important;
+          box-shadow: 0 8px 24px rgba(0,158,150,0.4) !important;
         }
 
-        .footer-links a {
-          color: var(--text-dark);
-          text-decoration: none;
-          font-size: 13px;
-          font-weight: 600;
+        .owner-btn:hover {
+          background: linear-gradient(135deg, #02b3aa 0%, #008f88 100%) !important;
         }
 
-        .footer-links a:hover {
-          color: var(--primary);
-        }
-
-        .footer-bottom {
-          font-size: 11px;
-          color: var(--text-gray);
-          border-top: 1px solid rgba(0,0,0,0.05);
-          padding-top: 16px;
-        }
-
-        /* Desktop Queries */
-        @media (min-width: 768px) {
-          .home-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 30px 40px 40px;
-          }
-          .hero-section {
-            padding: 60px 50px;
-            text-align: left;
-            margin-bottom: 30px;
-          }
-          .hero-split {
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            gap: 60px;
-          }
-          .hero-text-col {
-            align-items: flex-start;
-            text-align: left;
-            flex: 1;
-          }
-          .hero-image-col {
-            flex: 0 0 420px;
-            justify-content: flex-end;
-          }
-          .hero-image-wrapper {
-            max-width: 420px;
-          }
-          .hero-img {
-            aspect-ratio: 1/1;
-          }
-          .hero-title {
-            font-size: 44px;
-          }
-          .highlight-text {
-            font-size: 58px;
-          }
-          .hero-subtitle {
-            font-size: 16px;
-            max-width: 500px;
-            margin-bottom: 30px;
-          }
-          .search-bar-wrapper {
-            max-width: 520px;
-          }
-          .hero-actions {
-            flex-direction: row;
-            max-width: 520px;
-          }
-          .steps-section {
-            padding: 40px;
-            margin-bottom: 30px;
-          }
-          .section-title-centered {
-            font-size: 22px;
-            margin-bottom: 30px;
-          }
+        @media (min-width: 640px) {
           .steps-grid {
-            flex-direction: row;
-            gap: 24px;
+            grid-template-columns: repeat(3, 1fr);
           }
-          .step-card {
-            flex: 1;
-            padding: 30px 20px;
+          .listings-grid {
+            grid-template-columns: repeat(2, 1fr);
           }
-          .filters-section {
-            padding: 24px;
-            margin-bottom: 30px;
-          }
-          .filters-grid {
-            flex-direction: row;
-            align-items: flex-end;
-            gap: 24px;
-          }
-          .filter-item {
-            flex: 1;
-          }
-          .stats-ticker-banner {
-            flex-direction: row;
-            justify-content: space-around;
-            padding: 18px;
-            margin-bottom: 30px;
+        }
+
+        @media (min-width: 1024px) {
+          .hero-fullwidth {
+            min-height: 580px;
+            padding: 80px 60px;
           }
           .listings-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
           }
         }
       `}</style>
