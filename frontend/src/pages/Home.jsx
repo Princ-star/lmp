@@ -75,45 +75,70 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
       {/* Moving gradient premium Hero header */}
       <section className="hero-section glass-panel">
         <div className="hero-gradient-overlay"></div>
-        <div className="hero-content-inner">
-          <span className="welcome-tag">
-            {greeting === 'morning' && (
-              <>Bonjour <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></>
-            )}
-            {greeting === 'afternoon' && (
-              <>Bon après-midi <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41"/><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a5.5 5.5 0 0 1 1 10.9Z"/></svg></>
-            )}
-            {greeting === 'evening' && (
-              <>Bonsoir <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></>
-            )}
-            , bienvenue chez LMP
-          </span>
-          <h1 className="hero-title">Trouvez votre prochain <br /><span className="highlight-text">Chez vous</span></h1>
-          <p className="hero-subtitle">Explorez les logements disponibles en quelques clics et contactez directement les propriétaires.</p>
-          
-          <div className="search-bar-wrapper">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" className="search-icon">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-            </svg>
-            <input 
-              type="text" 
-              placeholder="Dans quel quartier cherchez-vous ? (Ex: Bidossessi...)" 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
-            />
+        
+        {/* Split layout: left text, right image */}
+        <div className="hero-split">
+          <div className="hero-text-col">
+            <span className="welcome-tag">
+              {greeting === 'morning' && (
+                <>Bonjour <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></>
+              )}
+              {greeting === 'afternoon' && (
+                <>Bon après-midi <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41"/><path d="M17.5 19H9a7 7 0 1 1 6.71-9h.79a5.5 5.5 0 0 1 1 10.9Z"/></svg></>
+              )}
+              {greeting === 'evening' && (
+                <>Bonsoir <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></>
+              )}
+              , bienvenue chez LMP
+            </span>
+
+            <h1 className="hero-title">
+              Trouvez votre prochain
+              <br />
+              <span className="highlight-text">CHEZ VOUS</span>
+            </h1>
+            <p className="hero-subtitle">Explorez les logements disponibles en quelques clics et contactez directement les propriétaires.</p>
+            
+            <div className="search-bar-wrapper">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" className="search-icon">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input 
+                type="text" 
+                placeholder="Dans quel quartier ? (Ex: Bidossessi, Fidjrossè...)" 
+                value={search} 
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
+            <div className="hero-actions">
+              <button className="btn-glass-primary search-cta" onClick={() => setTypeFilter(typeFilter === 'location' ? '' : 'location')}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Trouver ma chambre
+              </button>
+              <button className="btn-glass-outline publish-btn" onClick={onNavigateToPublish}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Publier une annonce
+              </button>
+            </div>
           </div>
 
-          <div className="hero-actions">
-            <button className="btn-primary search-cta" onClick={() => setTypeFilter(typeFilter === 'location' ? '' : 'location')}>
-              Trouver ma chambre
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
-            <button className="btn-outline publish-btn" onClick={onNavigateToPublish}>
-              Publier une annonce
-            </button>
+          {/* Hero Image */}
+          <div className="hero-image-col">
+            <div className="hero-image-wrapper">
+              <img src="/house_transition.png" alt="Propriétaire remettant les clés à un locataire" className="hero-img" />
+              <div className="hero-img-glass-badge">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>+3 500 logements vérifiés</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -328,11 +353,12 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
         }
 
         .hero-section {
-          padding: 28px;
+          padding: 28px 24px;
           margin-bottom: 24px;
           position: relative;
           overflow: hidden;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 235, 230, 0.4));
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(240, 235, 230, 0.5));
+          text-align: center;
         }
 
         .hero-gradient-overlay {
@@ -341,48 +367,70 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
           left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(45deg, rgba(214, 104, 83, 0.08), rgba(0, 158, 150, 0.08));
+          background: radial-gradient(ellipse at top left, rgba(214, 104, 83, 0.1), transparent 60%),
+                      radial-gradient(ellipse at bottom right, rgba(0, 158, 150, 0.08), transparent 60%);
           z-index: 1;
         }
 
-        .hero-content-inner {
+        .hero-split {
           position: relative;
           z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 28px;
+        }
+
+        .hero-text-col {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
 
         .welcome-tag {
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
           font-size: 11px;
           font-weight: 700;
           color: var(--primary);
           background: var(--primary-light);
           padding: 6px 14px;
           border-radius: 20px;
-          margin-bottom: 14px;
+          margin-bottom: 16px;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.8px;
         }
 
         .hero-title {
-          font-size: 32px;
+          font-size: 34px;
           line-height: 1.15;
           color: var(--text-dark);
-          margin-bottom: 12px;
+          margin-bottom: 14px;
           letter-spacing: -0.8px;
         }
 
         .highlight-text {
-          color: var(--primary);
-          background: linear-gradient(to right, var(--primary), var(--primary-hover));
+          display: block;
+          font-size: 46px;
+          font-weight: 900;
+          letter-spacing: -2px;
+          background: linear-gradient(135deg, var(--primary), #c0392b 40%, var(--primary-hover));
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          background-clip: text;
+          line-height: 1.1;
+          margin-top: 4px;
+          text-shadow: none;
         }
 
         .hero-subtitle {
           color: var(--text-gray);
-          font-size: 14px;
-          line-height: 1.5;
+          font-size: 15px;
+          line-height: 1.6;
           margin-bottom: 24px;
+          max-width: 400px;
         }
 
         .search-bar-wrapper {
@@ -394,18 +442,21 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
           padding: 10px 18px;
           gap: 12px;
           margin-bottom: 24px;
-          box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.05);
           transition: all 0.3s ease;
+          width: 100%;
+          max-width: 480px;
         }
 
         .search-bar-wrapper:focus-within {
           border-color: var(--primary);
           box-shadow: 0 8px 30px var(--primary-light);
-          transform: translateY(-1px);
+          transform: translateY(-2px);
         }
 
         .search-icon {
           color: var(--primary);
+          flex-shrink: 0;
         }
 
         .search-input {
@@ -413,7 +464,7 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
           background: transparent;
           flex: 1;
           outline: none;
-          font-size: 15px;
+          font-size: 14px;
           color: var(--text-dark);
           font-weight: 500;
         }
@@ -422,6 +473,121 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
           display: flex;
           flex-direction: column;
           gap: 12px;
+          width: 100%;
+          max-width: 480px;
+        }
+
+        /* Glassmorphism CTA buttons */
+        .btn-glass-primary {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 16px 24px;
+          font-size: 15px;
+          font-weight: 700;
+          font-family: 'Outfit', sans-serif;
+          cursor: pointer;
+          border: none;
+          border-radius: 16px;
+          background: var(--primary);
+          color: white;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 8px 32px rgba(214, 104, 83, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .btn-glass-primary::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 1px;
+          background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+        }
+
+        .btn-glass-primary:hover {
+          background: var(--primary-hover);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 40px rgba(214, 104, 83, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .btn-glass-primary:active {
+          transform: translateY(0px);
+        }
+
+        .btn-glass-outline {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 15px 24px;
+          font-size: 15px;
+          font-weight: 700;
+          font-family: 'Outfit', sans-serif;
+          cursor: pointer;
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.55);
+          color: var(--text-dark);
+          border: 1.5px solid rgba(214, 104, 83, 0.25);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-glass-outline:hover {
+          background: rgba(255, 255, 255, 0.75);
+          border-color: var(--primary);
+          color: var(--primary);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+
+        /* Hero image */
+        .hero-image-col {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+        }
+
+        .hero-image-wrapper {
+          position: relative;
+          width: 100%;
+          max-width: 340px;
+        }
+
+        .hero-img {
+          width: 100%;
+          border-radius: 24px;
+          object-fit: cover;
+          aspect-ratio: 4/3;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+          display: block;
+        }
+
+        .hero-img-glass-badge {
+          position: absolute;
+          bottom: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(255,255,255,0.85);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(0, 158, 150, 0.2);
+          border-radius: 30px;
+          padding: 8px 18px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--secondary);
+          white-space: nowrap;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         }
 
         .search-cta {
@@ -850,30 +1016,53 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, favorites, 
         /* Desktop Queries */
         @media (min-width: 768px) {
           .home-container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding-top: 30px;
+            padding: 30px 40px 40px;
           }
           .hero-section {
-            padding: 50px;
+            padding: 60px 50px;
             text-align: left;
             margin-bottom: 30px;
           }
-          .hero-content-inner {
-            max-width: 650px;
+          .hero-split {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+          }
+          .hero-text-col {
+            align-items: flex-start;
+            text-align: left;
+            flex: 1;
+          }
+          .hero-image-col {
+            flex: 0 0 420px;
+            justify-content: flex-end;
+          }
+          .hero-image-wrapper {
+            max-width: 420px;
+          }
+          .hero-img {
+            aspect-ratio: 1/1;
           }
           .hero-title {
-            font-size: 42px;
+            font-size: 44px;
+          }
+          .highlight-text {
+            font-size: 58px;
           }
           .hero-subtitle {
             font-size: 16px;
+            max-width: 500px;
             margin-bottom: 30px;
+          }
+          .search-bar-wrapper {
+            max-width: 520px;
           }
           .hero-actions {
             flex-direction: row;
-          }
-          .search-bar-wrapper {
-            max-width: 500px;
+            max-width: 520px;
           }
           .steps-section {
             padding: 40px;
