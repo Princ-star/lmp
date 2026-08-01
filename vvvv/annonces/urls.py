@@ -1,31 +1,41 @@
-from django.urls import path
-from . import views
-from django.conf.urls.static import static
+from django.urls import path, re_path
 from django.conf import settings
-
+from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
-    path('', views.site, name='site'),
-    path('accueil/', views.accueil, name='accueil'),
-    path('profil/', views.profil, name='profil'),
-    path('register/', views.register_view, name='register'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
-    path('annonce/' , views.annonce_view, name='annonce'),
-    path('annonce/<int:annonce_id>/publier/', views.publier,  name='publier'),
-    path('annonce/confirme/<int:annonce_id>/', views.publier_confirme, name='publier_confirme'),
-    path('site/' , views.site , name='site'),
-    path('vente/' , views.vente , name='vente'),
-    path('location/' , views.location , name='location'),
-    path('publications/', views.publications, name='publications'),
-    path('supprimer-annonce/<int:id>/', views.supprimer_annonce, name='supprimer_annonce'),
-    path('modifier-annonce/<int:id>/', views.modifier_annonce, name='modifier_annonce'),
-    path('annonce/<int:annonce_id>/toggle-dispo/', views.basculer_disponibilite, name='toggle_disponibilite'),
-    path('annonce/<int:annonce_id>/incrementer/', views.incrementer_compteur, name='incrementer_compteur'),
-    path('admin/utilisateurs/', views.admin_users_list, name='admin_users_list'),
-    path('admin/utilisateurs/<int:pk>/', views.admin_user_detail, name='admin_user_detail')
-    # ... autres routes (modifier, supprimer) ...
+    # Auth
+    path('api/auth/login/', views.api_login, name='api_login'),
+    path('api/auth/register/', views.api_register, name='api_register'),
+    path('api/auth/logout/', views.api_logout, name='api_logout'),
+    path('api/auth/me/', views.api_me, name='api_me'),
+
+    # Annonces
+    path('api/annonces/', views.api_annonces_list, name='api_annonces_list'),
+    path('api/annonces/creer/', views.api_create_annonce, name='api_create_annonce'),
+    path('api/annonces/<int:pk>/', views.api_annonce_detail, name='api_annonce_detail'),
+    path('api/annonces/<int:pk>/modifier/', views.api_update_annonce, name='api_update_annonce'),
+    path('api/annonces/<int:pk>/supprimer/', views.api_delete_annonce, name='api_delete_annonce'),
+    path('api/annonces/<int:pk>/toggle-dispo/', views.api_toggle_dispo, name='api_toggle_dispo'),
+    path('api/annonces/<int:pk>/incrementer/', views.api_incrementer_compteur, name='api_incrementer_compteur'),
+
+    # Messages
+    path('api/messages/', views.api_messages, name='api_messages'),
+    path('api/messages/history/<int:partner_id>/', views.api_message_history, name='api_message_history'),
+
+    # Visites & Dashboard
+    path('api/dashboard/', views.api_dashboard, name='api_dashboard'),
+    path('api/visites/', views.api_demande_visite, name='api_demande_visite'),
+    path('api/visites/<int:pk>/repondre/', views.api_demande_visite_repondre, name='api_demande_visite_repondre'),
+
+    # Admin endpoints
+    path('api/admin/utilisateurs/', views.api_admin_users, name='api_admin_users'),
+    path('api/admin/utilisateurs/<int:pk>/', views.api_admin_user_detail, name='api_admin_user_detail'),
+
+    # SPA index fallback (matches everything else, excluding media, static, and admin)
+    re_path(r'^(?!media/|static/|admin/).*$', views.index_view, name='index_fallback'),
 ]
+
 
 
 if settings.DEBUG:

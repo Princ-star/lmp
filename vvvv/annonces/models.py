@@ -113,3 +113,37 @@ class ClicAnnonce(models.Model):
         return f"Clic annonce {self.annonce_id}"
 
 
+class Message(models.Model):
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_messages')
+    content = models.TextField()
+    date_envoi = models.DateTimeField(auto_now_add=True)
+    est_lu = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['date_envoi']
+
+    def __str__(self):
+        return f"De {self.sender} à {self.receiver} ({self.date_envoi})"
+
+
+class DemandeVisite(models.Model):
+    class StatutVisite(models.TextChoices):
+        EN_ATTENTE = 'en_attente', 'En attente'
+        ACCEPTEE = 'acceptee', 'Acceptée'
+        REFUSEE = 'refusee', 'Refusée'
+
+    annonce = models.ForeignKey(Annonce, on_delete=models.CASCADE, related_name='demandes_visite')
+    locataire = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='demandes_visite')
+    date_visite = models.DateTimeField()
+    statut = models.CharField(max_length=20, choices=StatutVisite.choices, default=StatutVisite.EN_ATTENTE)
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"Demande par {self.locataire} pour {self.annonce} ({self.statut})"
+
+
+
