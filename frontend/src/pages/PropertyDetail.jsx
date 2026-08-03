@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-export default function PropertyDetail({ id, onBack, onContactOwner, favorites, toggleFavorite }) {
+export default function PropertyDetail({ id, onBack, onContactOwner, favorites, toggleFavorite, openToast }) {
   const [annonce, setAnnonce] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -11,7 +11,6 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
   const [visitDate, setVisitDate] = useState('');
   const [visitTime, setVisitTime] = useState('');
   const [submittingVisit, setSubmittingVisit] = useState(false);
-  const [visitMessage, setVisitMessage] = useState('');
 
   const { user } = useAuth();
   const isFav = favorites.includes(id);
@@ -22,7 +21,7 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
       const response = await fetch(`/api/annonces/${id}/`);
       const data = await response.json();
       setAnnonce(data);
-      // Increment views count via POST
+      // Increment views count
       fetch(`/api/annonces/${id}/incrementer/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -41,28 +40,21 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
 
   const handleContactClick = () => {
     if (!user) {
-      alert("Veuillez vous connecter pour envoyer un message.");
-      onContactOwner(null, true); // Directs to login
+      if (openToast) openToast("Veuillez vous connecter pour envoyer un message.", "error");
+      onContactOwner(null, true);
       return;
     }
-    // Increment clicks count
-    fetch(`/api/annonces/${id}/incrementer/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'compteur_type=clics'
-    }).catch(err => console.error("Error incrementing clics:", err));
-
     onContactOwner(annonce.utilisateurs.id);
   };
 
   const handleScheduleVisit = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert("Veuillez vous connecter pour planifier une visite.");
+      if (openToast) openToast("Veuillez vous connecter pour planifier une visite.", "error");
       return;
     }
     if (!visitDate || !visitTime) {
-      alert("Veuillez spécifier la date et l'heure.");
+      if (openToast) openToast("Veuillez spécifier la date et l'heure.", "error");
       return;
     }
 
@@ -77,657 +69,199 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
         })
       });
       if (response.ok) {
-        setVisitMessage("Votre demande de visite a bien été envoyée ! Le propriétaire l'examinera dans les plus brefs délais.");
-        setTimeout(() => {
-          setShowVisitModal(false);
-          setVisitMessage('');
-        }, 3000);
+        setShowVisitModal(false);
+        if (openToast) openToast("Demande de visite transmise avec succès au propriétaire !", "success");
       } else {
         const err = await response.json();
-        alert(err.error || "Une erreur est survenue.");
+        if (openToast) openToast(err.error || "Erreur lors de l'envoi de la demande.", "error");
       }
     } catch (error) {
-      alert("Impossible de planifier la visite.");
+      if (openToast) openToast("Impossible de planifier la visite.", "error");
     } finally {
       setSubmittingVisit(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="property-detail-loading animate-fade-in">
-        <div className="spinner"></div>
-        <span>Chargement des détails du logement...</span>
-      </div>
-    );
+    return <div className="text-center py-20 text-gray-400">Chargement des détails...</div>;
   }
 
   if (!annonce) {
     return (
-      <div className="property-detail-error glass-panel">
-        <h3>Une erreur est survenue</h3>
-        <p>Le logement demandé n'existe pas ou plus.</p>
-        <button className="btn-primary" onClick={onBack}>Retourner aux offres</button>
+      <div className="max-w-xl mx-auto my-12 p-8 bg-white rounded-3xl text-center border border-gray-100 shadow-md">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Annonce introuvable</h3>
+        <p className="text-sm text-gray-500 mb-6">Ce logement n'existe plus ou a été retiré.</p>
+        <button onClick={onBack} className="px-6 py-2.5 bg-terracotta text-white font-bold rounded-xl text-sm">
+          ← Retour aux offres
+        </button>
       </div>
     );
   }
 
   const images = annonce.images && annonce.images.length > 0 
     ? annonce.images.map(img => img.image_url)
-    : ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80'];
+    : [annonce.photo_principale || 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80'];
 
   return (
-    <div className="property-detail-container animate-fade-in">
-      {/* Top action row */}
-      <div className="top-navigation-row">
-        <button className="back-btn glass-panel" onClick={onBack}>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="m15 19-7-7 7-7"/>
-          </svg>
-          <span>Retour</span>
+    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 animate-fade-in">
+      
+      {/* Back & Share Header */}
+      <div className="flex justify-between items-center">
+        <button 
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-sm font-bold text-gray-700 hover:text-gray-900 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm transition"
+        >
+          ← Retour
         </button>
-        <div className="action-buttons-group">
-          <button className="icon-action-btn glass-panel" onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Lien de l'annonce copié dans le presse-papiers !");
-          }}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>
-            </svg>
+
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              if (openToast) openToast("Lien de l'annonce copié dans le presse-papiers !", "success");
+            }}
+            className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition shadow-sm"
+          >
+            🔗
           </button>
-          <button className={`icon-action-btn glass-panel ${isFav ? 'active' : ''}`} onClick={() => toggleFavorite(annonce.id)}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill={isFav ? "var(--primary)" : "none"} stroke="currentColor" strokeWidth="2.5">
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-            </svg>
+          <button 
+            onClick={() => toggleFavorite(annonce.id)}
+            className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:text-terracotta transition shadow-sm"
+          >
+            {isFav ? '❤️' : '🤍'}
           </button>
         </div>
       </div>
 
-      {/* Main Details Panel */}
-      <div className="main-details-card glass-panel">
-        <div className="title-section">
-          <h1 className="property-title">{annonce.type_annonce === 'location' ? 'Location' : 'Vente'} - {annonce.standing.replace('_', ' ').toUpperCase()}</h1>
-          <div className="meta-badges">
-            <span className="badge-type">{annonce.type_annonce === 'location' ? 'Mise en location' : 'Mise en vente'}</span>
-            <span className="badge-loc">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-              </svg>
-              {annonce.quartier}, Abomey-Calavi
-            </span>
+      {/* Main Content Grid */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-md grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Left Column: Gallery */}
+        <div className="space-y-3">
+          <div className="h-80 rounded-2xl overflow-hidden bg-gray-100 border border-gray-200">
+            <img src={images[selectedImage]} alt="Property" className="w-full h-full object-cover" />
           </div>
-          <div className="price-tag">
-            <span className="price-amount">{annonce.prix.toLocaleString()} FCFA</span>
-            <span className="price-period">{annonce.type_annonce === 'location' ? ' / mois' : ''}</span>
-          </div>
-        </div>
 
-        {/* Gallery */}
-        <div className="gallery-section">
-          <div className="main-image-wrapper">
-            <img src={images[selectedImage]} alt="Property" className="main-gallery-image" />
-          </div>
           {images.length > 1 && (
-            <div className="thumbnails-wrapper">
+            <div className="flex gap-2 overflow-x-auto pb-2">
               {images.map((img, idx) => (
-                <div 
-                  key={idx} 
-                  className={`thumbnail-item ${idx === selectedImage ? 'active' : ''}`}
+                <button 
+                  key={idx}
                   onClick={() => setSelectedImage(idx)}
+                  className={`w-16 h-16 rounded-xl overflow-hidden border-2 flex-shrink-0 transition ${
+                    idx === selectedImage ? 'border-terracotta' : 'border-transparent opacity-70'
+                  }`}
                 >
-                  <img src={img} alt="Thumbnail" />
-                </div>
+                  <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+                </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Owner details card */}
-        <div className="owner-card glass-panel">
-          <div className="owner-info">
-            <div className="owner-avatar">
-              {annonce.utilisateurs.prenom[0]}
-            </div>
-            <div className="owner-meta">
-              <h4>{annonce.utilisateurs.prenom} {annonce.utilisateurs.nom}</h4>
-              <span>Propriétaire</span>
+        {/* Right Column: Title, Price, Owner & Actions */}
+        <div className="space-y-6 flex flex-col justify-between">
+          <div className="space-y-3">
+            <span className="inline-block px-3 py-1 bg-terracotta-50 text-terracotta-700 rounded-full text-xs font-extrabold uppercase">
+              Location
+            </span>
+            <h1 className="text-2xl font-black text-gray-900">
+              {annonce.get_standing_display || annonce.standing} à {annonce.quartier}
+            </h1>
+            <p className="text-xs text-gray-500 font-semibold">📍 {annonce.quartier}, Abomey-Calavi / Cotonou</p>
+
+            <div className="pt-2">
+              <span className="text-3xl font-black text-terracotta">
+                {Number(annonce.prix).toLocaleString()} FCFA
+              </span>
+              <span className="text-sm font-normal text-gray-500"> /mois</span>
             </div>
           </div>
-          <div className="owner-actions">
-            <a href={`tel:${annonce.numero_telephone}`} className="owner-call-btn glass-panel">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
-            </a>
-            <button className="btn-primary contact-btn" onClick={handleContactClick}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-              Contacter
+
+          {/* Owner Info Box */}
+          <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shadow">
+                {annonce.utilisateurs.prenom[0]}
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-900 text-sm">{annonce.utilisateurs.prenom} {annonce.utilisateurs.nom}</h4>
+                <span className="text-xs text-gray-500 font-semibold">Propriétaire bailleur</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={handleContactClick}
+              className="px-4 py-2.5 bg-terracotta hover:bg-terracotta-600 text-white font-bold text-xs rounded-xl shadow transition"
+            >
+              Envoyer un message
             </button>
           </div>
+
+          {/* Schedule Visit Button */}
+          <button 
+            onClick={() => setShowVisitModal(true)}
+            className="w-full py-3.5 bg-emerald text-white font-extrabold rounded-2xl shadow-md hover:bg-emerald-600 transition text-sm flex items-center justify-center gap-2"
+          >
+            📅 Demander une visite du logement
+          </button>
         </div>
 
-        {/* Features grid */}
-        <div className="features-list">
-          <h3 className="section-subtitle">Caractéristiques</h3>
-          <div className="features-grid">
-            <div className="feature-card glass-panel">
-              <span className="feature-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--primary)" strokeWidth="2.5" style={{ display: 'block', margin: '0 auto' }}>
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                </svg>
-              </span>
-              <div className="feature-text">
-                <h5>Compteur personnel</h5>
-                <p>Gérez votre propre électricité à carte.</p>
-              </div>
-            </div>
-            
-            <div className="feature-card glass-panel">
-              <span className="feature-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--primary)" strokeWidth="2.5" style={{ display: 'block', margin: '0 auto' }}>
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              </span>
-              <div className="feature-text">
-                <h5>Sécurité garantie</h5>
-                <p>Maison clôturée avec gardien de nuit.</p>
-              </div>
-            </div>
-
-            <div className="feature-card glass-panel">
-              <span className="feature-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--primary)" strokeWidth="2.5" style={{ display: 'block', margin: '0 auto' }}>
-                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-                </svg>
-              </span>
-              <div className="feature-text">
-                <h5>Eau SONEB</h5>
-                <p>Eau courante potable incluse dans les charges.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Description section */}
-        <div className="description-section">
-          <h3 className="section-subtitle">Détails du logement</h3>
-          <p className="description-text">
-            {annonce.description || "Très beau logement d'exception situé dans un cadre sécurisé et agréable. Idéalement positionné à proximité des transports et des commerces. Parfait pour travailleur, étudiant ou couple recherchant le confort et la tranquillité."}
+        {/* Description Full Row */}
+        <div className="md:col-span-2 pt-6 border-t border-gray-100 space-y-3">
+          <h3 className="text-lg font-bold text-gray-900">Description du logement</h3>
+          <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+            {annonce.description || "Aucune description complémentaire renseignée par le propriétaire."}
           </p>
         </div>
 
-        {/* Schedule visit action */}
-        <div className="booking-action-section">
-          <button className="btn-secondary w-full" onClick={() => setShowVisitModal(true)}>
-            Planifier une visite
-          </button>
-        </div>
       </div>
 
       {/* Visit Booking Modal */}
       {showVisitModal && (
-        <div className="modal-overlay animate-fade-in" onClick={() => setShowVisitModal(false)}>
-          <div className="modal-content glass-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Planifier une visite</h3>
-              <button className="close-btn" onClick={() => setShowVisitModal(false)}>×</button>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-xl space-y-4">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <h3 className="font-bold text-gray-900 text-lg">Planifier une visite</h3>
+              <button onClick={() => setShowVisitModal(false)} className="text-gray-400 font-bold hover:text-gray-900">✕</button>
             </div>
-            
-            {visitMessage ? (
-              <div className="success-toast animate-fade-in">
-                <span className="toast-icon">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="3" style={{ display: 'block', margin: '0 auto' }}>
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                </span>
-                <p>{visitMessage}</p>
+
+            <form onSubmit={handleScheduleVisit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Date souhaitée</label>
+                <input 
+                  type="date"
+                  required
+                  value={visitDate}
+                  onChange={(e) => setVisitDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none"
+                />
               </div>
-            ) : (
-              <form onSubmit={handleScheduleVisit} className="visit-form">
-                <div className="form-group">
-                  <label>Choisir la date</label>
-                  <input 
-                    type="date" 
-                    required 
-                    value={visitDate}
-                    onChange={(e) => setVisitDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="glass-input" 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Heure préférée</label>
-                  <input 
-                    type="time" 
-                    required 
-                    value={visitTime}
-                    onChange={(e) => setVisitTime(e.target.value)}
-                    className="glass-input" 
-                  />
-                </div>
-                <button type="submit" disabled={submittingVisit} className="btn-primary w-full">
-                  {submittingVisit ? "Envoi..." : "Envoyer la demande"}
-                </button>
-              </form>
-            )}
+
+              <div>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Heure de rendez-vous</label>
+                <input 
+                  type="time"
+                  required
+                  value={visitTime}
+                  onChange={(e) => setVisitTime(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none"
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={submittingVisit}
+                className="w-full py-3 bg-emerald text-white font-bold rounded-xl text-sm shadow hover:bg-emerald-600 transition"
+              >
+                {submittingVisit ? "Envoi..." : "Confirmer la demande de visite"}
+              </button>
+            </form>
           </div>
         </div>
       )}
 
-      <style>{`
-        .property-detail-container {
-          padding: 75px 16px 20px 16px;
-        }
-
-        .top-navigation-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 16px;
-        }
-
-        .back-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 14px;
-          border: none;
-          background: var(--glass-bg);
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 14px;
-        }
-
-        .action-buttons-group {
-          display: flex;
-          gap: 8px;
-        }
-
-        .icon-action-btn {
-          width: 38px;
-          height: 38px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: none;
-          background: var(--glass-bg);
-          cursor: pointer;
-          color: var(--text-dark);
-          transition: all 0.2s ease;
-        }
-
-        .icon-action-btn.active {
-          color: var(--primary);
-          background: white;
-        }
-
-        .main-details-card {
-          padding: 20px;
-        }
-
-        .title-section {
-          margin-bottom: 20px;
-        }
-
-        .property-title {
-          font-size: 22px;
-          color: var(--text-dark);
-          margin-bottom: 6px;
-        }
-
-        .meta-badges {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 14px;
-        }
-
-        .badge-type {
-          font-size: 11px;
-          font-weight: 700;
-          background: rgba(214, 104, 83, 0.1);
-          color: var(--primary);
-          padding: 4px 10px;
-          border-radius: 20px;
-          text-transform: uppercase;
-        }
-
-        .badge-loc {
-          font-size: 12px;
-          color: var(--text-gray);
-          font-weight: 600;
-        }
-
-        .price-tag {
-          display: flex;
-          align-items: baseline;
-        }
-
-        .price-amount {
-          font-family: 'Outfit', sans-serif;
-          font-size: 24px;
-          font-weight: 800;
-          color: var(--primary);
-        }
-
-        .price-period {
-          font-size: 14px;
-          color: var(--text-gray);
-          font-weight: 600;
-        }
-
-        /* Gallery */
-        .gallery-section {
-          margin-bottom: 24px;
-          border-radius: 12px;
-          overflow: hidden;
-        }
-
-        .main-image-wrapper {
-          height: 240px;
-          width: 100%;
-        }
-
-        .main-gallery-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .thumbnails-wrapper {
-          display: flex;
-          gap: 10px;
-          padding: 10px 0 0 0;
-          overflow-x: auto;
-        }
-
-        .thumbnail-item {
-          width: 60px;
-          height: 60px;
-          border-radius: 8px;
-          overflow: hidden;
-          cursor: pointer;
-          border: 2px solid transparent;
-          flex-shrink: 0;
-        }
-
-        .thumbnail-item.active {
-          border-color: var(--primary);
-        }
-
-        .thumbnail-item img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        /* Owner Card */
-        .owner-card {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 14px;
-          margin-bottom: 24px;
-          background: rgba(255, 255, 255, 0.6);
-        }
-
-        .owner-info {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .owner-avatar {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: var(--primary);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 18px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-        }
-
-        .owner-meta h4 {
-          font-size: 15px;
-          color: var(--text-dark);
-        }
-
-        .owner-meta span {
-          font-size: 12px;
-          color: var(--text-gray);
-          font-weight: 600;
-        }
-
-        .owner-actions {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .owner-call-btn {
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--primary);
-          background: white;
-          border: none;
-          cursor: pointer;
-        }
-
-        .contact-btn {
-          padding: 10px 14px;
-          font-size: 14px;
-        }
-
-        /* Features List */
-        .section-subtitle {
-          font-size: 16px;
-          margin-bottom: 14px;
-          color: var(--text-dark);
-        }
-
-        .features-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin-bottom: 24px;
-        }
-
-        .feature-card {
-          display: flex;
-          align-items: flex-start;
-          padding: 14px;
-          gap: 14px;
-          background: rgba(255, 255, 255, 0.4);
-        }
-
-        .feature-icon {
-          font-size: 22px;
-        }
-
-        .feature-text h5 {
-          font-size: 14px;
-          margin-bottom: 2px;
-          color: var(--text-dark);
-        }
-
-        .feature-text p {
-          font-size: 12px;
-          color: var(--text-gray);
-        }
-
-        /* Description */
-        .description-section {
-          margin-bottom: 24px;
-        }
-
-        .description-text {
-          font-size: 14px;
-          line-height: 1.6;
-          color: var(--text-gray);
-        }
-
-        /* Booking */
-        .booking-action-section {
-          margin-top: 10px;
-        }
-
-        .w-full {
-          width: 100%;
-        }
-
-        /* Modal styling */
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.3);
-          backdrop-filter: blur(4px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 20px;
-        }
-
-        .modal-content {
-          width: 100%;
-          max-width: 400px;
-          padding: 24px;
-          background: white;
-          border-radius: 20px;
-          position: relative;
-        }
-
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-          font-size: 18px;
-        }
-
-        .close-btn {
-          background: transparent;
-          border: none;
-          font-size: 24px;
-          cursor: pointer;
-          color: var(--text-gray);
-        }
-
-        .visit-form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .form-group label {
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--text-gray);
-        }
-
-        .success-toast {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          padding: 20px 0;
-          gap: 12px;
-        }
-
-        .toast-icon {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: rgba(0, 158, 150, 0.1);
-          color: var(--secondary);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 20px;
-          font-weight: 700;
-        }
-
-        /* Loading */
-        .property-detail-loading {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 80vh;
-          gap: 16px;
-          color: var(--text-gray);
-        }
-
-        /* Desktop queries */
-        @media (min-width: 768px) {
-          .property-detail-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding-top: 30px;
-          }
-          .main-details-card {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 30px;
-            padding: 30px;
-          }
-          .gallery-section {
-            grid-column: 1;
-            grid-row: 2 / 5;
-            margin-bottom: 0;
-          }
-          .title-section {
-            grid-column: 1 / 3;
-            grid-row: 1;
-          }
-          .owner-card {
-            grid-column: 2;
-            grid-row: 2;
-            margin-bottom: 0;
-            align-self: start;
-          }
-          .features-list {
-            grid-column: 2;
-            grid-row: 3;
-            margin-bottom: 0;
-          }
-          .description-section {
-            grid-column: 1;
-            grid-row: 5;
-            margin-top: 20px;
-          }
-          .booking-action-section {
-            grid-column: 2;
-            grid-row: 4;
-            align-self: start;
-          }
-          .main-image-wrapper {
-            height: 380px;
-          }
-        }
-      `}</style>
     </div>
   );
 }

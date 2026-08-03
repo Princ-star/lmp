@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       if (response.ok) {
         setUser(data);
-        return { success: true };
+        return { success: true, user: data };
       } else {
         return { success: false, error: data.error || 'Identifiants invalides' };
       }
@@ -46,17 +46,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (email, password, nom, prenom, date_de_naissance) => {
+  const register = async (email, password, nom, prenom, date_de_naissance, type_utilisateur = 'locataire') => {
     try {
       const response = await fetch('/api/auth/register/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, nom, prenom, date_de_naissance }),
+        body: JSON.stringify({ email, password, nom, prenom, date_de_naissance, type_utilisateur }),
       });
       const data = await response.json();
       if (response.ok) {
         setUser(data);
-        return { success: true };
+        return { success: true, user: data };
       } else {
         return { success: false, error: data.error || 'Erreur lors de l\'inscription' };
       }

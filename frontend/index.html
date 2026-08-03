@@ -1,12 +1,47 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>LMP — Location Maison Plus</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              terracotta: {
+                DEFAULT: '#d66853',
+                50: '#fdf8f6',
+                100: '#faeee9',
+                500: '#d66853',
+                600: '#c85a47',
+                700: '#a64433',
+              },
+              emerald: {
+                DEFAULT: '#009e96',
+                50: '#f0faf9',
+                100: '#d5f2f0',
+                500: '#009e96',
+                600: '#008780',
+                700: '#006b66',
+              }
+            },
+            fontFamily: {
+              sans: ['Outfit', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
   </head>
-  <body>
+  <body class="bg-gray-50 text-gray-900 font-sans antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

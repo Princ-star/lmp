@@ -24,10 +24,13 @@ def serialize_annonce(annonce, request=None):
             'est_disponible': img.est_disponible
         })
     
+    photo_principale = images[0]['image_url'] if len(images) > 0 else ""
+
     return {
         'id': annonce.id,
         'type_annonce': annonce.type_annonce,
         'standing': annonce.standing,
+        'get_standing_display': annonce.get_standing_display(),
         'prix': float(annonce.prix),
         'description': annonce.description,
         'quartier': annonce.quartier,
@@ -38,6 +41,7 @@ def serialize_annonce(annonce, request=None):
         'est_disponible': annonce.est_disponible,
         'nbr_vues': annonce.nbr_vues,
         'nbr_clics': annonce.nbr_clics,
+        'photo_principale': photo_principale,
         'images': images,
         'utilisateurs': {
             'id': annonce.utilisateurs.id,
@@ -69,6 +73,7 @@ def api_login(request):
                 'email': user.email,
                 'nom': user.nom,
                 'prenom': user.prenom,
+                'type_utilisateur': getattr(user, 'type_utilisateur', 'locataire'),
                 'is_admin': user.is_admin
             })
         else:
@@ -87,6 +92,7 @@ def api_register(request):
         nom = data.get('nom')
         prenom = data.get('prenom')
         date_naiss_str = data.get('date_de_naissance') # YYYY-MM-DD
+        type_utilisateur = data.get('type_utilisateur', 'locataire')
         
         if not all([email, password, nom, prenom, date_naiss_str]):
             return JsonResponse({'error': 'Champs obligatoires manquants'}, status=400)
@@ -100,7 +106,8 @@ def api_register(request):
             nom=nom,
             prenom=prenom,
             date_de_naissance=date_naiss,
-            password=password
+            password=password,
+            type_utilisateur=type_utilisateur
         )
         login(request, user)
         return JsonResponse({
@@ -108,6 +115,7 @@ def api_register(request):
             'email': user.email,
             'nom': user.nom,
             'prenom': user.prenom,
+            'type_utilisateur': user.type_utilisateur,
             'is_admin': user.is_admin
         }, status=201)
     except Exception as e:
@@ -128,6 +136,7 @@ def api_me(request):
             'email': request.user.email,
             'nom': request.user.nom,
             'prenom': request.user.prenom,
+            'type_utilisateur': getattr(request.user, 'type_utilisateur', 'locataire'),
             'is_admin': request.user.is_admin
         }
     })

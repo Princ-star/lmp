@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 export default function Messages({ activePartnerId, onClearActivePartner }) {
   const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
-  const [selectedPartner, setSelectedPartner] = useState(null); // partner details
+  const [selectedPartner, setSelectedPartner] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loadingConv, setLoadingConv] = useState(true);
@@ -17,7 +17,7 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
       const response = await fetch('/api/messages/');
       const data = await response.json();
       if (response.ok) {
-        setConversations(data.conversations);
+        setConversations(data.conversations || []);
       }
     } catch (err) {
       console.error("Error fetching conversations:", err);
@@ -33,7 +33,7 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
       const data = await response.json();
       if (response.ok) {
         setSelectedPartner(data.partner);
-        setMessages(data.messages);
+        setMessages(data.messages || []);
       }
     } catch (err) {
       console.error("Error fetching message history:", err);
@@ -42,7 +42,6 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
     }
   };
 
-  // Poll for messages in active chat
   useEffect(() => {
     fetchConversations();
     
@@ -56,15 +55,13 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
     return () => clearInterval(interval);
   }, [selectedPartner]);
 
-  // Initial redirect if parameter activePartnerId is passed (e.g. from PropertyDetail)
   useEffect(() => {
     if (activePartnerId) {
       fetchMessageHistory(activePartnerId);
-      onClearActivePartner(); // Reset parameter
+      if (onClearActivePartner) onClearActivePartner();
     }
   }, [activePartnerId]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -94,492 +91,152 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
   };
 
   return (
-    <div className="messages-page-container animate-fade-in">
-      {selectedPartner ? (
-        /* Active Chat View */
-        <div className="chat-window-view glass-panel">
-          <div className="chat-header">
-            <button className="back-chat-btn" onClick={() => setSelectedPartner(null)}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="m15 19-7-7 7-7"/>
-              </svg>
-            </button>
-            <div className="chat-partner-info">
-              <div className="partner-avatar">
-                {selectedPartner.prenom[0]}
-              </div>
-              <div className="partner-meta">
-                <h4>{selectedPartner.prenom} {selectedPartner.nom}</h4>
-                <div className="status-online">
-                  <span className="pulse-dot"></span>
-                  <span>En ligne</span>
-                </div>
-              </div>
-            </div>
+    <div className="max-w-7xl mx-auto px-4 py-6 animate-fade-in">
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-md h-[calc(100vh-140px)] flex overflow-hidden">
+        
+        {/* Left Panel: Conversations List (Visible on desktop OR on mobile when no chat is selected) */}
+        <div className={`w-full md:w-80 lg:w-96 border-r border-gray-200 flex flex-col bg-gray-50/50 ${
+          selectedPartner ? 'hidden md:flex' : 'flex'
+        }`}>
+          <div className="p-4 border-b border-gray-200 bg-white">
+            <h2 className="text-xl font-extrabold text-gray-900">Messagerie</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Vos échanges avec les propriétaires et locataires</p>
           </div>
 
-          <div className="chat-messages-area">
-            {loadingMsgs ? (
-              <div className="loading-chat-overlay">
-                <div className="spinner"></div>
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="empty-chat">
-                <p>Aucun message. Envoyez le premier message !</p>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {loadingConv ? (
+              <div className="text-center py-8 text-gray-400 text-sm">Chargement des conversations...</div>
+            ) : conversations.length === 0 ? (
+              <div className="text-center py-12 px-4 text-gray-400 text-xs">
+                <div className="text-3xl mb-2">💬</div>
+                <p className="font-semibold text-gray-700 text-sm">Aucun message</p>
+                <p className="mt-1">Contactez un propriétaire depuis une annonce de location pour lancer la discussion.</p>
               </div>
             ) : (
-              <div className="chat-bubble-list">
-                <div className="chat-date-separator">
-                  <span>Aujourd'hui</span>
-                </div>
-                
-                {messages.map((msg) => {
-                  const isOwn = msg.sender_id === user.id;
-                  return (
-                    <div key={msg.id} className={`chat-bubble-row ${isOwn ? 'own' : 'partner'}`}>
-                      <div className="bubble-content">
-                        <p>{msg.content}</p>
-                        <span className="bubble-time">
-                          {new Date(msg.date_envoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div ref={messagesEndRef} />
-              </div>
-            )}
-          </div>
-
-          <form onSubmit={handleSendMessage} className="chat-input-bar glass-panel">
-            <button type="button" className="attachment-btn">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-              </svg>
-            </button>
-            <input 
-              type="text" 
-              placeholder="Écrivez votre message..." 
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              className="chat-message-input"
-            />
-            <button type="submit" className="send-btn-circle" disabled={!newMessage.trim()}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-              </svg>
-            </button>
-          </form>
-        </div>
-      ) : (
-        /* Conversation List View */
-        <div className="conversations-list-view glass-panel">
-          <div className="conv-header">
-            <h3>Messages</h3>
-            <button className="icon-action-btn glass-panel">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-            </button>
-          </div>
-
-          {loadingConv ? (
-            <div className="spinner-wrapper">
-              <div className="spinner"></div>
-              <span>Chargement des messages...</span>
-            </div>
-          ) : conversations.length === 0 ? (
-            <div className="no-conversations">
-              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-              <p>Aucune conversation en cours.</p>
-              <span className="sub">Visitez une annonce et contactez le propriétaire pour démarrer une discussion.</span>
-            </div>
-          ) : (
-            <div className="conversations-list">
-              {conversations.map((conv) => {
+              conversations.map((conv) => {
                 const partner = conv.partner;
                 const lastMsg = conv.last_message;
-                const hasUnread = !lastMsg.est_lu && lastMsg.sender_id !== user.id;
+                const isSelected = selectedPartner?.id === partner.id;
 
                 return (
-                  <div 
-                    key={partner.id} 
-                    className={`conversation-card glass-panel glass-panel-hover ${hasUnread ? 'unread' : ''}`}
+                  <div
+                    key={partner.id}
                     onClick={() => fetchMessageHistory(partner.id)}
+                    className={`p-3.5 rounded-2xl cursor-pointer transition flex items-center gap-3 border ${
+                      isSelected 
+                        ? 'bg-terracotta-50 border-terracotta-200 shadow-sm' 
+                        : 'bg-white border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                    }`}
                   >
-                    <div className="partner-avatar">
-                      {partner.prenom[0]}
+                    <div className="w-10 h-10 rounded-full bg-terracotta text-white font-extrabold flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                      {partner.prenom ? partner.prenom[0] : 'U'}
                     </div>
-                    <div className="conv-details">
-                      <div className="conv-meta-row">
-                        <h4>{partner.prenom} {partner.nom}</h4>
-                        <span className="conv-time">
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-baseline mb-1">
+                        <h4 className="font-bold text-gray-900 text-sm truncate">{partner.prenom} {partner.nom}</h4>
+                        <span className="text-[10px] font-semibold text-gray-400">
                           {new Date(lastMsg.date_envoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <div className="conv-msg-row">
-                        <p className="conv-snippet">{lastMsg.content}</p>
-                        {hasUnread && <span className="unread-dot"></span>}
-                      </div>
+                      <p className="text-xs text-gray-500 truncate">{lastMsg.content}</p>
                     </div>
                   </div>
                 );
-              })}
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Right Panel: Active Discussion Chat Window */}
+        <div className={`flex-1 flex-col bg-white ${
+          selectedPartner ? 'flex' : 'hidden md:flex'
+        }`}>
+          {selectedPartner ? (
+            <>
+              {/* Chat Header */}
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setSelectedPartner(null)} 
+                    className="md:hidden p-2 rounded-lg bg-gray-100 text-gray-600 hover:text-gray-900 text-sm font-bold"
+                  >
+                    ←
+                  </button>
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shadow-sm">
+                    {selectedPartner.prenom[0]}
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-gray-900 text-base">{selectedPartner.prenom} {selectedPartner.nom}</h3>
+                    <span className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> En ligne
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Messages List */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/30">
+                {loadingMsgs ? (
+                  <div className="text-center py-8 text-gray-400 text-sm">Chargement des messages...</div>
+                ) : messages.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400 text-sm">
+                    Posez vos questions directement au propriétaire !
+                  </div>
+                ) : (
+                  messages.map((msg) => {
+                    const isOwn = msg.sender_id === user.id;
+                    return (
+                      <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[75%] p-3.5 rounded-2xl shadow-sm ${
+                          isOwn 
+                            ? 'bg-terracotta text-white rounded-br-none' 
+                            : 'bg-white border border-gray-200 text-gray-900 rounded-bl-none'
+                        }`}>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                          <span className={`block text-[9px] font-semibold mt-1 text-right ${
+                            isOwn ? 'text-white/70' : 'text-gray-400'
+                          }`}>
+                            {new Date(msg.date_envoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Message Input Bar */}
+              <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 flex items-center gap-2 bg-white">
+                <input 
+                  type="text" 
+                  placeholder="Écrivez votre message..." 
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="flex-1 px-4 py-3 bg-gray-100 rounded-xl text-sm border border-transparent focus:border-terracotta focus:bg-white outline-none transition"
+                />
+                <button 
+                  type="submit" 
+                  disabled={!newMessage.trim()}
+                  className="px-5 py-3 bg-terracotta text-white font-bold rounded-xl disabled:opacity-40 hover:bg-terracotta-600 transition shadow-sm text-sm"
+                >
+                  Envoyer
+                </button>
+              </form>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-400">
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl mb-3">
+                💬
+              </div>
+              <h3 className="font-bold text-gray-800 text-lg">Sélectionnez une discussion</h3>
+              <p className="text-sm max-w-xs mt-1">Choisissez un interlocuteur dans la liste de gauche pour afficher vos échanges.</p>
             </div>
           )}
         </div>
-      )}
 
-      <style>{`
-        .messages-page-container {
-          padding: 75px 16px 20px 16px;
-        }
-
-        .conversations-list-view {
-          padding: 20px;
-        }
-
-        .conv-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-
-        .conversations-list {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .conversation-card {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 14px;
-          cursor: pointer;
-          background: rgba(255, 255, 255, 0.4);
-        }
-
-        .conversation-card.unread {
-          background: rgba(214, 104, 83, 0.05);
-          border-color: rgba(214, 104, 83, 0.15);
-        }
-
-        .conv-details {
-          flex: 1;
-        }
-
-        .conv-meta-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 4px;
-        }
-
-        .conv-meta-row h4 {
-          font-size: 15px;
-          color: var(--text-dark);
-        }
-
-        .conv-time {
-          font-size: 11px;
-          color: var(--text-gray);
-          font-weight: 600;
-        }
-
-        .conv-msg-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .conv-snippet {
-          font-size: 12px;
-          color: var(--text-gray);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 220px;
-        }
-
-        .unread-dot {
-          width: 8px;
-          height: 8px;
-          background: var(--primary);
-          border-radius: 50%;
-        }
-
-        .no-conversations {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          padding: 60px 20px;
-          gap: 14px;
-          color: var(--text-gray);
-        }
-
-        .no-conversations p {
-          font-size: 16px;
-          font-weight: 600;
-          color: var(--text-dark);
-        }
-
-        .no-conversations .sub {
-          font-size: 12px;
-          line-height: 1.5;
-        }
-
-        /* Active Chat Window */
-        .chat-window-view {
-          display: flex;
-          flex-direction: column;
-          height: calc(100vh - 170px);
-          overflow: hidden;
-          padding: 0;
-        }
-
-        .chat-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          border-bottom: 1px solid rgba(0,0,0,0.06);
-          background: rgba(255, 255, 255, 0.35);
-        }
-
-        .back-chat-btn {
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          color: var(--text-gray);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 4px;
-        }
-
-        .chat-partner-info {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .partner-avatar {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: var(--primary);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 15px;
-          font-family: 'Outfit', sans-serif;
-        }
-
-        .partner-meta h4 {
-          font-size: 14px;
-        }
-
-        .status-online {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 10px;
-          color: var(--secondary);
-          font-weight: 700;
-        }
-
-        .pulse-dot {
-          width: 6px;
-          height: 6px;
-          background: var(--secondary);
-          border-radius: 50%;
-          animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-          0% { transform: scale(0.9); opacity: 1; }
-          50% { transform: scale(1.3); opacity: 0.5; }
-          100% { transform: scale(0.9); opacity: 1; }
-        }
-
-        .chat-messages-area {
-          flex: 1;
-          overflow-y: auto;
-          padding: 16px;
-          background: rgba(245, 240, 235, 0.2);
-          position: relative;
-        }
-
-        .chat-date-separator {
-          text-align: center;
-          margin: 10px 0 20px 0;
-          position: relative;
-        }
-
-        .chat-date-separator::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 50%;
-          border-bottom: 1px solid rgba(0,0,0,0.05);
-          z-index: 1;
-        }
-
-        .chat-date-separator span {
-          background: #fdfcfb;
-          padding: 4px 10px;
-          font-size: 11px;
-          color: var(--text-gray);
-          font-weight: 600;
-          border-radius: 20px;
-          position: relative;
-          z-index: 2;
-          border: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .chat-bubble-row {
-          display: flex;
-          margin-bottom: 12px;
-        }
-
-        .chat-bubble-row.own {
-          justify-content: flex-end;
-        }
-
-        .bubble-content {
-          max-width: 75%;
-          padding: 12px 14px;
-          border-radius: 16px;
-          position: relative;
-        }
-
-        .chat-bubble-row.own .bubble-content {
-          background: var(--primary);
-          color: white;
-          border-bottom-right-radius: 4px;
-          box-shadow: 0 4px 12px rgba(214, 104, 83, 0.15);
-        }
-
-        .chat-bubble-row.partner .bubble-content {
-          background: white;
-          color: var(--text-dark);
-          border-bottom-left-radius: 4px;
-          border: 1px solid rgba(0,0,0,0.04);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-        }
-
-        .bubble-content p {
-          font-size: 14px;
-          line-height: 1.4;
-        }
-
-        .bubble-time {
-          display: block;
-          text-align: right;
-          font-size: 9px;
-          margin-top: 4px;
-          opacity: 0.7;
-          font-weight: 600;
-        }
-
-        .chat-input-bar {
-          display: flex;
-          align-items: center;
-          padding: 8px 12px;
-          border-top: 1px solid rgba(0,0,0,0.06);
-          background: white;
-          border-radius: 0;
-          gap: 10px;
-        }
-
-        .attachment-btn {
-          background: transparent;
-          border: none;
-          color: var(--text-gray);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 6px;
-          border-radius: 50%;
-        }
-
-        .attachment-btn:hover {
-          background: rgba(0,0,0,0.02);
-        }
-
-        .chat-message-input {
-          flex: 1;
-          border: none;
-          background: rgba(240, 235, 230, 0.4);
-          border-radius: 20px;
-          padding: 10px 16px;
-          font-size: 14px;
-          outline: none;
-        }
-
-        .send-btn-circle {
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          background: var(--primary);
-          color: white;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .send-btn-circle:disabled {
-          background: var(--text-gray);
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
-
-        .loading-chat-overlay {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100%;
-        }
-
-        /* Desktop Queries */
-        @media (min-width: 768px) {
-          .messages-page-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding-top: 30px;
-          }
-          /* Side by side chat layout on Desktop */
-          .messages-page-container {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-          }
-          .conversations-list-view {
-            grid-column: 1;
-            height: calc(100vh - 120px);
-          }
-          .chat-window-view {
-            grid-column: 2;
-            height: calc(100vh - 120px);
-          }
-          /* Hide back button on desktop since list is visible */
-          .back-chat-btn {
-            display: none;
-          }
-        }
-      `}</style>
+      </div>
     </div>
   );
 }

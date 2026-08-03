@@ -14,6 +14,8 @@ export default function LoginRegister({ onAuthSuccess, onBack }) {
 
   const { login, register } = useAuth();
 
+  const isProprietaire = role === 'proprietaire';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -25,9 +27,9 @@ export default function LoginRegister({ onAuthSuccess, onBack }) {
         setSubmitting(false);
         return;
       }
-      const res = await register(email, password, nom, prenom, dateDeNaissance);
+      const res = await register(email, password, nom, prenom, dateDeNaissance, role);
       if (res.success) {
-        onAuthSuccess();
+        onAuthSuccess(res.user);
       } else {
         setErrorMsg(res.error);
       }
@@ -39,7 +41,7 @@ export default function LoginRegister({ onAuthSuccess, onBack }) {
       }
       const res = await login(email, password);
       if (res.success) {
-        onAuthSuccess();
+        onAuthSuccess(res.user);
       } else {
         setErrorMsg(res.error);
       }
@@ -48,29 +50,36 @@ export default function LoginRegister({ onAuthSuccess, onBack }) {
   };
 
   return (
-    <div className={`login-container ${role === 'proprietaire' ? 'theme-proprietaire' : 'theme-locataire'} animate-fade-in`}>
-      <div className="login-card glass-panel">
-        <button className="back-arrow-btn" onClick={onBack}>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="m15 19-7-7 7-7"/>
-          </svg>
-          <span>Retour</span>
+    <div className="min-h-[80vh] flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl p-8 max-w-md w-full border border-gray-100 shadow-xl relative animate-fade-in">
+        
+        <button 
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-gray-900 mb-6 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 transition"
+        >
+          ← Retour
         </button>
 
-        <div className="login-header">
-          <h1 className="login-title">{isRegister ? "Créez votre compte" : "Bon retour"}</h1>
-          <p className="login-subtitle">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-extrabold text-gray-900">
+            {isRegister ? "Créer un compte" : "Connexion"}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
             {isRegister 
-              ? "Rejoignez LMP pour trouver ou publier des logements" 
-              : "Connectez-vous pour accéder à votre espace"}
+              ? "Choisissez votre profil pour commencer sur LMP" 
+              : "Connectez-vous à votre espace personnel"}
           </p>
         </div>
 
         {/* Role Toggle Commutator */}
-        <div className="role-toggle-bar glass-panel">
+        <div className="p-1.5 bg-gray-100 rounded-2xl flex gap-1 mb-6">
           <button 
             type="button"
-            className={`role-btn ${role === 'locataire' ? 'active' : ''}`}
+            className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition ${
+              role === 'locataire' 
+                ? 'bg-terracotta text-white shadow-md' 
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
             onClick={() => setRole('locataire')}
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -78,330 +87,116 @@ export default function LoginRegister({ onAuthSuccess, onBack }) {
             </svg>
             Locataire
           </button>
+
           <button 
             type="button"
-            className={`role-btn ${role === 'proprietaire' ? 'active' : ''}`}
+            className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition ${
+              role === 'proprietaire' 
+                ? 'bg-emerald text-white shadow-md' 
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
             onClick={() => setRole('proprietaire')}
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
             </svg>
             Propriétaire
           </button>
         </div>
 
         {errorMsg && (
-          <div className="error-alert animate-fade-in">
-            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-            </span>
-            <p>{errorMsg}</p>
+          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl mb-4 text-xs font-semibold flex items-center gap-2">
+            ⚠️ {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {isRegister && (
             <>
-              <div className="form-row">
-                <div className="form-group flex-1">
-                  <label>Nom</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Nom</label>
                   <input 
                     type="text" 
-                    placeholder="Nom"
                     required
+                    placeholder="Votre nom"
                     value={nom}
                     onChange={(e) => setNom(e.target.value)}
-                    className="glass-input" 
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-gray-300" 
                   />
                 </div>
-                <div className="form-group flex-1">
-                  <label>Prénom</label>
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Prénom</label>
                   <input 
                     type="text" 
-                    placeholder="Prénom"
                     required
+                    placeholder="Votre prénom"
                     value={prenom}
                     onChange={(e) => setPrenom(e.target.value)}
-                    className="glass-input" 
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-gray-300" 
                   />
                 </div>
               </div>
-              <div className="form-group">
-                <label>Date de naissance</label>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Date de naissance</label>
                 <input 
                   type="date" 
                   required
                   value={dateDeNaissance}
                   onChange={(e) => setDateDeNaissance(e.target.value)}
-                  className="glass-input" 
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-gray-300" 
                 />
               </div>
             </>
           )}
 
-          <div className="form-group">
-            <label>Adresse Email</label>
+          <div>
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Adresse Email</label>
             <input 
               type="email" 
-              placeholder="Ex: urielatihou5@gmail.com"
               required
+              placeholder="votre.email@exemple.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="glass-input" 
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-gray-300" 
             />
           </div>
 
-          <div className="form-group">
-            <div className="label-row">
-              <label>Mot de passe</label>
-              {!isRegister && <span className="forgot-pass">Oublié ?</span>}
-            </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Mot de passe</label>
             <input 
               type="password" 
-              placeholder="••••••••"
               required
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="glass-input" 
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-gray-300" 
             />
           </div>
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full submit-btn">
-            {submitting ? "Patientez..." : (isRegister ? "S'inscrire" : "Se connecter")}
+          <button 
+            type="submit" 
+            disabled={submitting} 
+            className={`w-full py-3 rounded-xl font-extrabold text-white shadow-md transition ${
+              isProprietaire 
+                ? 'bg-emerald hover:bg-emerald-600' 
+                : 'bg-terracotta hover:bg-terracotta-600'
+            }`}
+          >
+            {submitting ? "Chargement..." : (isRegister ? `S'inscrire comme ${isProprietaire ? 'Propriétaire' : 'Locataire'}` : "Se connecter")}
           </button>
         </form>
 
-        <div className="social-login-separator">
-          <span>Ou continuer avec</span>
-        </div>
-
-        <button className="google-auth-btn glass-panel w-full">
-          <svg viewBox="0 0 24 24" width="18" height="18" className="google-logo">
-            <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.41 0-6.19-2.78-6.19-6.19 0-3.41 2.78-6.19 6.19-6.19 1.488 0 2.857.536 3.924 1.428l3.14-3.14C18.91 1.765 15.772 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c5.897 0 10.87-4.14 10.87-11.24 0-.693-.07-1.373-.18-1.955H12.24Z"/>
-          </svg>
-          Google
-        </button>
-
-        <div className="toggle-auth-mode">
+        <div className="text-center mt-6 pt-4 border-t border-gray-100 text-xs text-gray-500">
           {isRegister ? (
-            <p>Vous avez déjà un compte ? <span onClick={() => setIsRegister(false)}>Se connecter</span></p>
+            <p>Vous avez déjà un compte ? <button onClick={() => setIsRegister(false)} className="font-bold text-gray-900 underline">Se connecter</button></p>
           ) : (
-            <p>Vous n'avez pas de compte ? <span onClick={() => setIsRegister(true)}>S'inscrire</span></p>
+            <p>Pas encore de compte ? <button onClick={() => setIsRegister(true)} className="font-bold text-gray-900 underline">Créer un compte</button></p>
           )}
         </div>
+
       </div>
-
-      <style>{`
-        .login-container {
-          padding: 85px 16px 20px 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 85vh;
-        }
-
-        .login-card {
-          width: 100%;
-          max-width: 420px;
-          padding: 24px;
-        }
-
-        .back-arrow-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: transparent;
-          border: none;
-          color: var(--text-gray);
-          font-weight: 600;
-          font-size: 14px;
-          cursor: pointer;
-          margin-bottom: 20px;
-          padding: 4px 8px;
-          border-radius: 8px;
-        }
-
-        .back-arrow-btn:hover {
-          color: var(--text-dark);
-          background: rgba(0,0,0,0.02);
-        }
-
-        .login-header {
-          text-align: center;
-          margin-bottom: 24px;
-        }
-
-        .login-title {
-          font-size: 24px;
-          color: var(--text-dark);
-          margin-bottom: 6px;
-        }
-
-        .login-subtitle {
-          font-size: 13px;
-          color: var(--text-gray);
-        }
-
-        .role-toggle-bar {
-          display: flex;
-          padding: 4px;
-          background: rgba(240, 235, 230, 0.4);
-          border-radius: 12px;
-          margin-bottom: 24px;
-        }
-
-        .role-btn {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 10px;
-          border: none;
-          background: transparent;
-          border-radius: 10px;
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--text-gray);
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .role-btn.active {
-          background: white;
-          color: var(--primary);
-          box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-        }
-
-        .error-alert {
-          display: flex;
-          align-items: flex-start;
-          background: rgba(234, 67, 53, 0.08);
-          border: 1px solid rgba(234, 67, 53, 0.15);
-          color: #ea4335;
-          padding: 12px;
-          border-radius: 10px;
-          margin-bottom: 18px;
-          gap: 8px;
-          font-size: 13px;
-        }
-
-        .error-alert span {
-          font-weight: 700;
-        }
-
-        .auth-form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .form-row {
-          display: flex;
-          gap: 12px;
-        }
-
-        .flex-1 {
-          flex: 1;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .form-group label {
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--text-gray);
-        }
-
-        .label-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .forgot-pass {
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--primary);
-          cursor: pointer;
-        }
-
-        .submit-btn {
-          margin-top: 6px;
-        }
-
-        .social-login-separator {
-          display: flex;
-          align-items: center;
-          text-align: center;
-          margin: 20px 0;
-          color: var(--text-gray);
-          font-size: 12px;
-        }
-
-        .social-login-separator::before,
-        .social-login-separator::after {
-          content: '';
-          flex: 1;
-          border-bottom: 1px solid rgba(0,0,0,0.06);
-        }
-
-        .social-login-separator::before {
-          margin-right: 10px;
-        }
-
-        .social-login-separator::after {
-          margin-left: 10px;
-        }
-
-        .google-auth-btn {
-          background: white;
-          border: 1px solid rgba(0,0,0,0.08);
-          border-radius: 12px;
-          padding: 12px;
-          font-size: 15px;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          cursor: pointer;
-          color: var(--text-dark);
-          transition: all 0.2s ease;
-        }
-
-        .google-auth-btn:hover {
-          background: rgba(0,0,0,0.01);
-          border-color: rgba(0,0,0,0.15);
-        }
-
-        .google-logo {
-          margin-top: 1px;
-        }
-
-        .toggle-auth-mode {
-          text-align: center;
-          margin-top: 24px;
-          font-size: 13px;
-          color: var(--text-gray);
-        }
-
-        .toggle-auth-mode span {
-          color: var(--primary);
-          font-weight: 700;
-          cursor: pointer;
-        }
-
-        .toggle-auth-mode span:hover {
-          text-decoration: underline;
-        }
-      `}</style>
     </div>
   );
 }

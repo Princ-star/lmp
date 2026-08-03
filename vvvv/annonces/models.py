@@ -24,10 +24,16 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    TYPE_CHOICES = (
+        ('locataire', 'Locataire'),
+        ('proprietaire', 'Propriétaire'),
+    )
+
     nom = models.CharField(max_length=150)
     prenom = models.CharField(max_length=150)
     date_de_naissance = models.DateField()
     email = models.EmailField(unique=True)
+    type_utilisateur = models.CharField(max_length=20, choices=TYPE_CHOICES, default='locataire')
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 

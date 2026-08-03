@@ -8,11 +8,21 @@ import PropertyDetail from './pages/PropertyDetail';
 import LoginRegister from './pages/LoginRegister';
 import Dashboard from './pages/Dashboard';
 import Messages from './pages/Messages';
+import InfoPages from './pages/InfoPages';
+import { ToastNotification, ConfirmationModal } from './components/ToastModal';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('annonces'); // 'annonces', 'catalogue', 'favoris', 'messages', 'profile'
   const [selectedAnnonceId, setSelectedAnnonceId] = useState(null);
   const [activePartnerId, setActivePartnerId] = useState(null);
+  const [infoPage, setInfoPage] = useState(null); // 'cgu', 'confidentialite', 'contact', 'a-propos'
+  
+  // Toast notification state
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  // Confirmation modal state
+  const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'success' });
+
   const { user, loading } = useAuth();
   
   // Favorites local state
@@ -20,6 +30,13 @@ function MainApp() {
     const saved = localStorage.getItem('lmp_favorites');
     return saved ? JSON.parse(saved) : [];
   });
+
+  const openToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+    }, 4000);
+  };
 
   const toggleFavorite = (id) => {
     setFavorites((prev) => {
@@ -29,28 +46,51 @@ function MainApp() {
       localStorage.setItem('lmp_favorites', JSON.stringify(updated));
       return updated;
     });
+    openToast("Vos favoris ont été mis à jour !", "success");
   };
 
   const handleSelectAnnonce = (id) => {
+    setInfoPage(null);
     setSelectedAnnonceId(id);
   };
 
   const handleContactOwner = (ownerId, forceLogin = false) => {
     if (forceLogin) {
+      setInfoPage(null);
+      setSelectedAnnonceId(null);
       setActiveTab('profile');
       return;
     }
     setActivePartnerId(ownerId);
     setSelectedAnnonceId(null);
+    setInfoPage(null);
     setActiveTab('messages');
   };
 
   const navigateToTab = (tab) => {
     setSelectedAnnonceId(null);
+    setInfoPage(null);
     setActiveTab(tab);
   };
 
+  const handleOpenInfoPage = (pageName) => {
+    setSelectedAnnonceId(null);
+    setInfoPage(pageName);
+  };
+
   const renderTabContent = () => {
+    // If an info page is open (e.g. CGU, Contact)
+    if (infoPage) {
+      return (
+        <InfoPages 
+          pageType={infoPage} 
+          onBack={() => setInfoPage(null)} 
+          onNavigateToTab={navigateToTab}
+        />
+      );
+    }
+
+    // If an annonce detail is selected
     if (selectedAnnonceId) {
       return (
         <PropertyDetail 
@@ -59,6 +99,7 @@ function MainApp() {
           onContactOwner={handleContactOwner}
           favorites={favorites}
           toggleFavorite={toggleFavorite}
+          openToast={openToast}
         />
       );
     }
@@ -85,13 +126,16 @@ function MainApp() {
         );
       case 'favoris':
         return (
-          <div className="favorites-page animate-fade-in" style={{ padding: '24px 16px 20px 16px', maxWidth: '1280px', margin: '0 auto' }}>
-            <h2 className="section-title">Mes Favoris</h2>
-            <p className="listings-subtitle" style={{ marginBottom: '20px' }}>Retrouvez vos logements coup de cœur enregistrés</p>
+          <div className="max-w-7xl mx-auto px-4 py-8 animate-fade-in">
+            <h2 className="text-2xl font-black text-gray-900 mb-1">Mes Logements Favoris</h2>
+            <p className="text-sm text-gray-500 mb-6">Retrouvez les annonces que vous avez enregistrées</p>
             {favorites.length === 0 ? (
-              <div className="no-results glass-panel" style={{ padding: '60px 40px', textAlign: 'center', borderRadius: '20px' }}>
-                <p style={{ fontSize: '16px', color: '#6b7280' }}>Vous n'avez pas encore ajouté de favoris.</p>
-                <button className="cta-btn-colored" style={{ marginTop: '16px' }} onClick={() => navigateToTab('catalogue')}>
+              <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm space-y-4">
+                <p className="text-gray-500 text-sm">Vous n'avez pas encore de logement dans vos favoris.</p>
+                <button 
+                  onClick={() => navigateToTab('catalogue')} 
+                  className="px-6 py-3 bg-terracotta text-white font-bold rounded-xl text-sm shadow hover:bg-terracotta-600 transition"
+                >
                   Explorer le catalogue
                 </button>
               </div>
@@ -108,7 +152,7 @@ function MainApp() {
         if (!user) {
           return (
             <LoginRegister 
-              onAuthSuccess={() => navigateToTab('messages')}
+              onAuthSuccess={(u) => navigateToTab(u?.type_utilisateur === 'proprietaire' ? 'profile' : 'messages')}
               onBack={() => navigateToTab('annonces')}
             />
           );
@@ -129,7 +173,10 @@ function MainApp() {
           );
         }
         return (
-          <Dashboard onSelectAnnonce={handleSelectAnnonce} />
+          <Dashboard 
+            onSelectAnnonce={handleSelectAnnonce} 
+            openToast={openToast}
+          />
         );
       default:
         return (
@@ -146,53 +193,43 @@ function MainApp() {
 
   if (loading) {
     return (
-      <div className="loading-splash">
-        <div className="logo-pulse">LMP</div>
-        <div className="spinner"></div>
-        <style>{`
-          .loading-splash {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: #fbf9f6;
-            gap: 20px;
-          }
-          .logo-pulse {
-            font-family: 'Outfit', sans-serif;
-            font-size: 38px;
-            font-weight: 800;
-            color: #d66853;
-            animation: pulse-logo 1.5s infinite;
-          }
-          @keyframes pulse-logo {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.7; }
-          }
-          .spinner {
-            width: 32px;
-            height: 32px;
-            border: 4px solid rgba(0,0,0,0.06);
-            border-top-color: #d66853;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-          }
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
+        <div className="text-3xl font-black text-terracotta animate-pulse">LMP</div>
+        <div className="w-8 h-8 border-4 border-terracotta/20 border-t-terracotta rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className={`app-container ${activeTab === 'profile' ? 'theme-proprietaire' : 'theme-locataire'}`}>
-      <Navbar activeTab={activeTab === 'accueil' ? 'annonces' : activeTab} setActiveTab={navigateToTab} />
-      <main className="main-content-wrapper">
+    <div className="min-h-screen flex flex-col justify-between bg-gray-50 text-gray-900">
+      <Navbar 
+        activeTab={activeTab === 'accueil' ? 'annonces' : activeTab} 
+        setActiveTab={navigateToTab} 
+      />
+
+      <main className="flex-1">
         {renderTabContent()}
       </main>
-      <Footer setActiveTab={navigateToTab} />
+
+      <Footer 
+        setActiveTab={navigateToTab} 
+        onOpenInfoPage={handleOpenInfoPage}
+      />
+
+      {/* Global Toast Notification */}
+      <ToastNotification 
+        toast={toast} 
+        onClose={() => setToast({ show: false, message: '', type: 'success' })} 
+      />
+
+      {/* Global Confirmation Modal */}
+      <ConfirmationModal 
+        isOpen={modal.isOpen}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={() => setModal({ ...modal, isOpen: false })}
+      />
     </div>
   );
 }
