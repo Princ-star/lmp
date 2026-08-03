@@ -122,13 +122,13 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
             }}
             className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition shadow-sm"
           >
-            🔗
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </button>
           <button 
             onClick={() => toggleFavorite(annonce.id)}
             className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-700 hover:text-terracotta transition shadow-sm"
           >
-            {isFav ? '❤️' : '🤍'}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className={isFav ? 'text-red-500' : 'text-gray-500'}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </button>
         </div>
       </div>
@@ -168,7 +168,10 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
             <h1 className="text-2xl font-black text-gray-900">
               {annonce.get_standing_display || annonce.standing} à {annonce.quartier}
             </h1>
-            <p className="text-xs text-gray-500 font-semibold">📍 {annonce.quartier}, Abomey-Calavi / Cotonou</p>
+            <p className="text-xs text-gray-500 font-semibold flex items-center gap-1">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {annonce.quartier}, Abomey-Calavi / Cotonou
+            </p>
 
             <div className="pt-2">
               <span className="text-3xl font-black text-terracotta">
@@ -203,7 +206,8 @@ export default function PropertyDetail({ id, onBack, onContactOwner, favorites, 
             onClick={() => setShowVisitModal(true)}
             className="w-full py-3.5 bg-emerald text-white font-extrabold rounded-2xl shadow-md hover:bg-emerald-600 transition text-sm flex items-center justify-center gap-2"
           >
-            📅 Demander une visite du logement
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Demander une visite du logement
           </button>
         </div>
 

@@ -163,8 +163,9 @@ export default function Catalogue({ onSelectAnnonce, favorites, toggleFavorite }
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold text-xs">
-                          🏠 Sans photo
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-semibold text-xs gap-1.5">
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                          Sans photo
                         </div>
                       )}
 
@@ -176,13 +177,16 @@ export default function Catalogue({ onSelectAnnonce, favorites, toggleFavorite }
                         onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
                         className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow text-gray-700 hover:text-terracotta transition"
                       >
-                        {isFav ? '❤️' : '🤍'}
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className={isFav ? 'text-red-500' : 'text-gray-500'}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       </button>
                     </div>
 
                     <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                       <div>
-                        <span className="text-xs text-gray-500 font-semibold">📍 {item.quartier || 'Cotonou'}</span>
+                        <span className="text-xs text-gray-500 font-semibold flex items-center gap-1">
+                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                          {item.quartier || 'Cotonou'}
+                        </span>
                         <h3 className="font-extrabold text-gray-900 text-base line-clamp-1 group-hover:text-terracotta transition">
                           {item.titre}
                         </h3>

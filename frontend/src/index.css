@@ -272,39 +272,3 @@ code {
     margin: 0;
   }
 }
-
-/* ============================================================ */
-/*  Tailwind CDN Custom Color Aliases                           */
-/*  Because Tailwind CDN JIT requires DEFAULT to be resolved    */
-/* ============================================================ */
-
-/* Emerald (Propriétaire) theme aliases */
-.bg-emerald { background-color: #009e96 !important; }
-.text-emerald { color: #009e96 !important; }
-.border-emerald { border-color: #009e96 !important; }
-.hover\:bg-emerald-600:hover { background-color: #008780 !important; }
-.hover\:text-emerald:hover { color: #009e96 !important; }
-.focus\:ring-emerald\/20:focus { --tw-ring-color: rgba(0,158,150,0.2); }
-
-/* Terracotta (Locataire) theme aliases */
-.bg-terracotta-700 { background-color: #a64433 !important; }
-.text-terracotta-700 { color: #a64433 !important; }
-.hover\:bg-terracotta-600:hover { background-color: #c85a47 !important; }
-.from-terracotta-700 { --tw-gradient-from: #a64433; }
-.bg-terracotta-50 { background-color: #fdf8f6 !important; }
-.bg-terracotta-900 { background-color: #7a3020 !important; }
-
-/* Emerald Gradient helpers */
-.from-emerald-700 { --tw-gradient-from: #006b66; }
-.via-emerald-600 { --tw-gradient-via: #008780; }
-.to-teal-800 { --tw-gradient-to: #0d6f6b; }
-.from-terracotta-600 { --tw-gradient-from: #c85a47; }
-.from-terracotta-700 { --tw-gradient-from: #a64433; }
-.to-amber-700 { --tw-gradient-to: #b45309; }
-
-/* Mobile padding to avoid bottom nav overlap */
-@media (max-width: 767px) {
-  main {
-    padding-bottom: 72px;
-  }
-}
