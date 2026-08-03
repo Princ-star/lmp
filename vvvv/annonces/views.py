@@ -28,6 +28,7 @@ def serialize_annonce(annonce, request=None):
 
     return {
         'id': annonce.id,
+        'titre': f"{annonce.get_standing_display()} — {annonce.quartier}",
         'type_annonce': annonce.type_annonce,
         'standing': annonce.standing,
         'get_standing_display': annonce.get_standing_display(),
@@ -419,13 +420,23 @@ def api_dashboard(request):
         demandes = DemandeVisite.objects.filter(annonce__utilisateurs=request.user).select_related('locataire', 'annonce')
         serialized_demandes = [{
             'id': d.id,
-            'annonce_title': f"{d.annonce.type_annonce.capitalize()} - {d.annonce.standing.replace('_', ' ')}",
+            'annonce': d.annonce.id,
+            'annonce_titre': f"{d.annonce.get_standing_display()} — {d.annonce.quartier}",
             'annonce_quartier': d.annonce.quartier,
-            'annonce_id': d.annonce.id,
-            'locataire_name': f"{d.locataire.prenom} {d.locataire.nom}",
+            'locataire_nom': f"{d.locataire.prenom} {d.locataire.nom}",
             'date_visite': d.date_visite.isoformat(),
             'statut': d.statut
         } for d in demandes]
+        
+        # Demandes de visite envoyées par le locataire
+        mes_demandes = DemandeVisite.objects.filter(locataire=request.user).select_related('annonce')
+        mes_demandes_serialized = [{
+            'id': d.id,
+            'annonce': d.annonce.id,
+            'annonce_titre': f"{d.annonce.get_standing_display()} — {d.annonce.quartier}",
+            'date_visite': d.date_visite.isoformat(),
+            'statut': d.statut
+        } for d in mes_demandes]
         
         return JsonResponse({
             'stats': {
@@ -434,7 +445,8 @@ def api_dashboard(request):
                 'taux_occupation': taux_occupation
             },
             'my_annonces': [serialize_annonce(a, request) for a in my_annonces],
-            'demandes_visite': serialized_demandes
+            'demandes_visite': serialized_demandes,
+            'mes_demandes': mes_demandes_serialized
         })
 
 @csrf_exempt

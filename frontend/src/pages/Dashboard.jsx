@@ -8,6 +8,7 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
   const [stats, setStats] = useState({ total_annonces: 0, visites_planifiees: 0, taux_occupation: 100 });
   const [myAnnonces, setMyAnnonces] = useState([]);
   const [demandesVisite, setDemandesVisite] = useState([]);
+  const [mesDemandes, setMesDemandes] = useState([]); // Pour locataire
   const [loading, setLoading] = useState(true);
 
   // Tabs for Proprietaire: 'overview', 'annonces', 'visites', 'publier'
@@ -47,6 +48,7 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
         setStats(data.stats || { total_annonces: 0, visites_planifiees: 0, taux_occupation: 100 });
         setMyAnnonces(data.my_annonces || []);
         setDemandesVisite(data.demandes_visite || []);
+        setMesDemandes(data.mes_demandes || []);
       }
     } catch (error) {
       console.error('Error fetching dashboard:', error);
@@ -580,37 +582,107 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
       {/* ================= LOCATAIRE VIEWS ================= */}
       {!isProprietaire && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-extrabold text-gray-900 mb-4">Mes demandes de visite transmises</h2>
-            {demandesVisite.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <p>Vous n'avez envoyé aucune demande de visite pour l'instant.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {demandesVisite.map((item) => (
-                  <div key={item.id} className="p-4 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-gray-900">Demande pour le bien #{item.annonce}</div>
-                      <div className="text-xs text-gray-500">Date demandée : {new Date(item.date_visite).toLocaleString('fr-FR')}</div>
+          {activeTab === 'visites' && (
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+              <h2 className="text-xl font-extrabold text-gray-900 mb-4">Mes demandes de visite transmises</h2>
+              {mesDemandes.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Vous n'avez envoyé aucune demande de visite pour l'instant.</p>
+                  <p className="text-sm text-gray-400 mt-2">Explorez le catalogue et contactez un propriétaire pour planifier une visite.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {mesDemandes.map((item) => (
+                    <div key={item.id} className="p-4 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between gap-4 flex-wrap">
+                      <div>
+                        <div className="font-bold text-gray-900">
+                          {item.annonce_titre || `Bien de location #${item.annonce}`}
+                        </div>
+                        <div className="text-xs text-gray-500">Date demandée : {new Date(item.date_visite).toLocaleString('fr-FR')}</div>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                        item.statut === 'acceptee' 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : item.statut === 'refusee' 
+                          ? 'bg-red-100 text-red-700' 
+                          : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {item.statut === 'acceptee' ? '✓ Acceptée' : item.statut === 'refusee' ? '✗ Refusée' : '⏳ En attente'}
+                      </span>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      item.statut === 'acceptee' 
-                        ? 'bg-emerald-100 text-emerald-700' 
-                        : item.statut === 'refusee' 
-                        ? 'bg-red-100 text-red-700' 
-                        : 'bg-amber-100 text-amber-700'
-                    }`}>
-                      {item.statut === 'acceptee' ? 'Acceptée par le proprio' : item.statut === 'refusee' ? 'Refusée' : 'En attente'}
-                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'profil' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Profile Card */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
+                <h2 className="text-xl font-extrabold text-gray-900">Mon Profil</h2>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-terracotta text-white font-extrabold flex items-center justify-center text-2xl shadow-md">
+                    {user?.prenom?.[0]?.toUpperCase()}
                   </div>
-                ))}
+                  <div>
+                    <p className="font-bold text-gray-900 text-lg">{user?.prenom} {user?.nom}</p>
+                    <p className="text-sm text-terracotta font-semibold">Locataire</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-medium">Email</span>
+                    <span className="text-gray-900 font-semibold">{user?.email}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-medium">Rôle</span>
+                    <span className="px-2.5 py-0.5 bg-terracotta-50 text-terracotta font-bold rounded-full text-xs">Locataire</span>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={logout}
+                  className="w-full mt-4 py-2.5 border border-red-200 text-red-600 font-bold rounded-xl hover:bg-red-50 transition text-sm"
+                >
+                  Se déconnecter
+                </button>
               </div>
-            )}
-          </div>
+
+              {/* Quick links */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-3">
+                <h3 className="font-extrabold text-gray-900 mb-4">Que faire ensuite ?</h3>
+                <div className="space-y-3">
+                  <div className="p-4 bg-terracotta-50 rounded-xl border border-terracotta/10 flex items-start gap-3">
+                    <span className="text-xl">🏡</span>
+                    <div>
+                      <p className="font-bold text-gray-800 text-sm">Explorer le catalogue</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Parcourez toutes les offres de location disponibles</p>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <span className="text-xl">📅</span>
+                    <div>
+                      <p className="font-bold text-gray-800 text-sm">Planifier des visites</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Cliquez sur une annonce et demandez une visite au propriétaire</p>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-start gap-3">
+                    <span className="text-xl">💬</span>
+                    <div>
+                      <p className="font-bold text-gray-800 text-sm">Discuter avec les propriétaires</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Posez vos questions directement depuis la messagerie</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
     </div>
   );
 }
+

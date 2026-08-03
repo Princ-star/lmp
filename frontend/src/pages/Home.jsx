@@ -45,53 +45,67 @@ export default function Home({ onSelectAnnonce, onNavigateToPublish, onNavigateT
   return (
     <div className="space-y-12 animate-fade-in pb-12">
       
-      {/* HERO SECTION FULLWIDTH CLEAN DESIGN */}
-      <section className="relative rounded-3xl overflow-hidden min-h-[460px] flex items-center shadow-xl border border-gray-100 bg-gray-900 text-white">
+      {/* HERO SECTION — Full Width with Left Gradient Overlay */}
+      <section className="relative w-full overflow-hidden min-h-[520px] md:min-h-[600px] flex items-center shadow-2xl">
+        {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-40 scale-105 transition-transform duration-700 hover:scale-100"
-          style={{ backgroundImage: `url(/hero_bg.jpg)` }}
-        ></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-950/95 via-gray-900/80 to-transparent"></div>
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(/hero_bg.jpg)`, backgroundPosition: 'center 30%' }}
+        />
+        {/* Left-to-right gradient overlay: strong on left, transparent on right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-950/95 via-gray-900/75 to-gray-900/20" />
+        {/* Bottom subtle vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/40 via-transparent to-transparent" />
 
-        <div className="relative z-10 max-w-2xl px-6 md:px-12 py-12 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-white/90">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full py-16 space-y-6 max-w-xl">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-white/90 w-fit">
             🏡 Plateforme #1 de location au Bénin
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black leading-tight tracking-tight">
-            Trouvez votre maison en <br />
-            <span className="text-terracotta">LOCATION</span> facilement
+          <h1 className="text-4xl md:text-5xl xl:text-6xl font-black leading-tight tracking-tight text-white">
+            Trouvez votre<br />
+            logement <span style={{color: '#d66853'}}>CHEZ VOUS</span>
           </h1>
 
-          <p className="text-white/80 text-base md:text-lg leading-relaxed">
-            Consultez les offres vérifiées de chambres, appartements et villas à Cotonou & Abomey-Calavi sans intermédiaire.
+          <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-md">
+            Chambres, appartements et villas vérifiés à Cotonou & Abomey-Calavi. Location directe sans intermédiaire.
           </p>
 
-          {/* Clean Search Bar */}
+          {/* Search bar */}
           <div className="relative max-w-lg">
             <input 
               type="text"
-              placeholder="Dans quel quartier ? (Ex: Cadjehoun, Calavi, Akpakpa...)"
+              placeholder="Dans quel quartier ? (Ex: Cadjehoun, Akpakpa...)"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white text-gray-900 placeholder-gray-400 font-medium text-sm border border-gray-200 shadow-lg outline-none focus:ring-4 focus:ring-terracotta/30"
+              className="w-full pl-11 pr-4 py-4 rounded-2xl bg-white text-gray-900 placeholder-gray-400 font-medium text-sm border-0 shadow-xl outline-none focus:ring-4 focus:ring-terracotta/30"
             />
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </div>
 
-          {/* Action Buttons */}
+          {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 pt-2">
             <button 
               onClick={onNavigateToCatalogue}
-              className="px-6 py-3.5 bg-terracotta hover:bg-terracotta-600 text-white font-bold rounded-2xl shadow-lg transition text-sm flex items-center gap-2"
+              className="px-7 py-4 font-extrabold rounded-2xl shadow-lg transition text-sm flex items-center gap-2 text-white"
+              style={{backgroundColor: '#d66853'}}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#c85a47'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#d66853'}
             >
-              Voir toutes les locations
+              Voir toutes les locations →
             </button>
             <button 
               onClick={onNavigateToPublish}
-              className="px-6 py-3.5 bg-white/15 hover:bg-white/25 text-white font-bold rounded-2xl border border-white/30 transition text-sm flex items-center gap-2"
+              className="px-7 py-4 font-extrabold rounded-2xl text-white text-sm flex items-center gap-2 transition"
+              style={{
+                background: 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                boxShadow: '0 4px 24px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.25)'
+              }}
             >
               + Publier un bien
             </button>
