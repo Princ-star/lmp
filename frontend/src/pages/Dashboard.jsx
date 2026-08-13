@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Home, Calendar, Zap, Camera, X, ArrowRight, Check } from 'lucide-react';
 
 export default function Dashboard({ onSelectAnnonce, openToast }) {
   const { user, logout } = useAuth();
@@ -250,7 +251,7 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xl">
-                    🏠
+                    <Home className="w-6 h-6" />
                   </div>
                   <div>
                     <span className="text-xs font-bold uppercase text-gray-400">Annonces Actives</span>
@@ -260,7 +261,7 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
 
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl">
-                    📅
+                    <Calendar className="w-6 h-6" />
                   </div>
                   <div>
                     <span className="text-xs font-bold uppercase text-gray-400">Visites Sollicitées</span>
@@ -270,7 +271,7 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
 
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xl">
-                    ⚡
+                    <Zap className="w-6 h-6" />
                   </div>
                   <div>
                     <span className="text-xs font-bold uppercase text-gray-400">Taux de réponse</span>
@@ -519,8 +520,9 @@ export default function Dashboard({ onSelectAnnonce, openToast }) {
                           onChange={handleImageChange}
                           className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                         />
-                        <div className="text-gray-500 font-medium text-sm">
-                          📷 Cliquez ici pour ajouter des photos
+                        <div className="flex flex-col items-center justify-center gap-2 text-center text-gray-500 font-medium text-sm">
+                          <Camera className="w-6 h-6" />
+                          <span>Cliquez ici pour ajouter des photos</span>
                         </div>
                       </div>
 

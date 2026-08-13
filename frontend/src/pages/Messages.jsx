@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { MessageCircle, ArrowLeft } from 'lucide-react';
 
 export default function Messages({ activePartnerId, onClearActivePartner }) {
   const { user } = useAuth();
@@ -108,7 +109,7 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
               <div className="text-center py-8 text-gray-400 text-sm">Chargement des conversations...</div>
             ) : conversations.length === 0 ? (
               <div className="text-center py-12 px-4 text-gray-400 text-xs">
-                <div className="text-3xl mb-2">💬</div>
+                <div className="text-3xl mb-2"><MessageCircle className="w-8 h-8 mx-auto mb-2" /></div>
                 <p className="font-semibold text-gray-700 text-sm">Aucun message</p>
                 <p className="mt-1">Contactez un propriétaire depuis une annonce de location pour lancer la discussion.</p>
               </div>
@@ -228,7 +229,7 @@ export default function Messages({ activePartnerId, onClearActivePartner }) {
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-400">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-2xl mb-3">
-                💬
+                <MessageCircle className="w-8 h-8 mx-auto mb-2" />
               </div>
               <h3 className="font-bold text-gray-800 text-lg">Sélectionnez une discussion</h3>
               <p className="text-sm max-w-xs mt-1">Choisissez un interlocuteur dans la liste de gauche pour afficher vos échanges.</p>
